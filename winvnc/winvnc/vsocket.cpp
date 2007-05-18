@@ -335,6 +335,7 @@ VSocket::Accept()
   // Accept an incoming connection
   if ((new_socket_id = accept(sock, NULL, 0)) < 0)
     return NULL;
+  DWORD error=WSAGetLastError();
 
   // Create a new VSocket and return it
   new_socket = new VSocket;
