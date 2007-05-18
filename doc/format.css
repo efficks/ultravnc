@@ -1,0 +1,67 @@
+/* Marscha's css */   
+   
+body {
+	font: 12pt/14pt verdana, sans-serif;
+	margin: 20px;
+	border: 0px;
+}
+
+p {
+	margin: 5px;
+	padding: 3px 0px;
+}
+
+p.indent {
+	margin: 5px;
+	margin-left: 50px;
+	padding: 3px 0px;
+}
+
+dt {
+	font: bold	
+}
+
+dd {
+	margin-bottom: 5px;
+}
+
+li {
+	margin: 5px;
+}
+
+h1, h2, h3, h4, h5 {
+	background-color: #eeeeee;
+	vertical-align: middle;
+}
+
+h1 {
+	background: url(ultravnc.png) no-repeat center left;
+	/* background-color: #eeeeee; */
+	border: 4px solid #eeeeee;
+	padding: 15px;
+	font: 18pt bolder;
+}
+
+h2 {
+	background: url(h.gif) no-repeat center right;
+	background-color: #eeeeee;
+	padding: 5px;
+	font: 14pt;
+}
+
+h3 {
+	background-color: #eeeeee;
+	padding: 5px;
+	font: 12pt;
+}
+
+.footer {
+	padding: 10px;
+	font: 10pt;
+	text-align: center;
+	background-color: #eeeeee;
+}
+
+code {
+	font: bold 13pt "Courier New", monospace;
+}

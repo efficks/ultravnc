@@ -1,0 +1,53 @@
+<html>
+  <head><title>MSLogonACL for UltraVNC</title>
+    <link rel="stylesheet" type="text/css" href="format.css">
+  </head>
+  <body>
+
+    <h1 align="center">MSLogonACL for UltraVNC</h1>
+
+    <h2>What is MSLogonACL?</h2>
+    <p>The purpose of MSLogonACL is to allow for automated UltraVNC installations including access rights configuration for MS-Logon II.</p>
+    <p>With the new MS-Logon functionality in UltraVNC, the access rights are stored in an ACL (access control list).
+      This is a binary structure which holds a list of SIDs (security identifiers) together with the description 
+      which rights are granted or denied to each SID.</p>
+    <p>The ACL can be edited via the VNC properties page. 
+      In order to allow for automated VNC installations a method is required for configuring the ACL from the commandline. 
+      This is the purpose of MSLogonACL.</p>
+
+
+    <h2>Exporting an ACL</h2>
+
+    <p><code>MSLogonACL /e <i>file</i></code> for exporting to <code><i>file</i></code>.</p>
+    <p>If <code><i>file</i></code> is omitted, the security settings are printed to the console (stdout).
+      <br>Lines beginning with <code>==</code> are debug information on stderr.</p>
+    <p class="indent"><img src="export.png" width="668" height="331"></p>
+
+    <h2>Importing an ACL</h2>
+    <p><code>MSLogonACL /i /a <i>file</i></code> for appending ACEs to the current ACL or
+      <br><code>MSLogonACL /i /o <i>file</i></code> for overwriting the current ACL
+      <br>reading the security configuration from <code><i>file</i></code>.
+    </p>
+
+    <h2>Format of the configuration file</h2>
+
+    <p><code>allow 0x3 domain\account</code> <br>
+      or<br>
+        <code>deny 0x3 domain\account</code></p>
+    <p><code>0x1</code> is ViewOnly, <code>0x3</code> is Interact and implies that you can also view the remote desktop.</p>
+    <p><code>domain</code> can be a computername or the name of a domain.
+      <br>If domain is not specified (like <code>deny 0x3 account</code>), Windows tries to match the account name to a local or a domain account. 
+      <br>It is not recommended to omit the domain part since this may lead to unexpected results.</p>
+    <p><code>account</code> can be groupname or username.</p>
+    <p>If the accountname contains spaces, the domain\account expression is to be enclosed in quotationmarks:<br>
+        <code>allow 0x3 "domain\account"</code>
+      <br>Even if the accountname doesn't contain spaces, quotationmarks won't hurt.</p>
+    <p> MSLogonACL has two abbreviations for special domains:
+      <br>one dot to denote the computername and two dots to denote the computer's domain:
+      <br><code>.\account</code> for a local account on the computer
+      <br>or
+      <br><code>..\account</code> for an account in the computer's domain.
+    </p>
+    <p class="footer">5. Jan. 2005, UltraVNC team</p>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: french - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPBE.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/french.pdb" /machine:I386 /out:"Release/french.dll" /implib:"Release/french.lib" /NOENTRY 
+".\Release\vncviewer.res"
+]
+Creating command line "xilink6.exe @C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPBE.tmp"
+<h3>Output Window</h3>
+Linking...
+xilink6: warning: empty multi-file optimizations object list
+xilink6: executing 'C:\PROGRA~1\MIAF9D~1\VC98\Bin\link.exe'
+
+
+
+<h3>Results</h3>
+french.dll - 0 error(s), 1 warning(s)
+<h3>
+--------------------Configuration: german - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPBF.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/german.pdb" /machine:I386 /out:"Release/german.dll" /implib:"Release/german.lib" /NOENTRY 
+".\Release\vncviewer.res"
+]
+Creating command line "xilink6.exe @C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPBF.tmp"
+<h3>Output Window</h3>
+Linking...
+xilink6: warning: empty multi-file optimizations object list
+xilink6: executing 'C:\PROGRA~1\MIAF9D~1\VC98\Bin\link.exe'
+
+
+
+<h3>Results</h3>
+german.dll - 0 error(s), 1 warning(s)
+<h3>
+--------------------Configuration: vncviewer - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC0.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /I "omnithread" /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__NT__" /D "_WINSTATIC" /D "__WIN32__" /Fp"Release/vncviewer.pch" /YX"stdhdrs.h" /Fo"Release/" /Fd"Release/" /FD /O3 /QaxW /Qssp /Qglobal-hoist /Qipo /c 
+"C:\c++\ultravnc_svn\tabbed_viewer\vncviewer.cpp"
+]
+Creating command line "xicl6.exe @C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC0.tmp" 
+Creating temporary file "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC1.bat" with contents
+[
+@echo off
+cl /nologo /MT /FoRelease\ /FdRelease\ /c buildtime.cpp
+]
+Creating command line "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC1.bat"
+Compiling...
+vncviewer.cpp
+icl: Command line warning: overriding '-O2' with '-O3'
+Creating temporary file "C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC3.tmp" with contents
+[
+comctl32.lib winmm.lib omnithread.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib wsock32.lib d3d9.lib d3dx9.lib dxguid.lib /nologo /subsystem:windows /incremental:yes /pdb:"Release/vncviewer.pdb" /machine:I386 /out:"Release/vncviewer.exe" /libpath:"omnithread/Release" 
+".\Release\AboutBox.obj"
+".\Release\AccelKeys.obj"
+".\Release\AuthDialog.obj"
+".\Release\buildtime.obj"
+".\Release\ClientConnection.obj"
+".\Release\ClientConnectionCacheRect.obj"
+".\Release\ClientConnectionClipboard.obj"
+".\Release\ClientConnectionCopyRect.obj"
+".\Release\ClientConnectionCoRRE.obj"
+".\Release\ClientConnectionCursor.obj"
+".\Release\ClientConnectionFile.obj"
+".\Release\ClientConnectionFullScreen.obj"
+".\Release\ClientConnectionHextile.obj"
+".\Release\ClientConnectionRaw.obj"
+".\Release\ClientConnectionRRE.obj"
+".\Release\ClientConnectionTight.obj"
+".\Release\ClientConnectionUltra.obj"
+".\Release\ClientConnectionWinproc.obj"
+".\Release\ClientConnectionZlib.obj"
+".\Release\ClientConnectionZlibHex.obj"
+".\Release\d3des.obj"
+".\Release\Daemon.obj"
+".\Release\DSMPlugin.obj"
+".\Release\Exception.obj"
+".\Release\FileTransfer.obj"
+".\Release\Flasher.obj"
+".\Release\FullScreenTitleBar.obj"
+".\Release\Global_graph.obj"
+".\Release\HotkeyDlg.obj"
+".\Release\KeyMap.obj"
+".\Release\Log.obj"
+".\Release\LowLevelHook.obj"
+".\Release\minilzo.obj"
+".\Release\MRU.obj"
+".\Release\SessionDialog.obj"
+".\Release\stdhdrs.obj"
+".\Release\TextChat.obj"
+".\Release\vncauth.obj"
+".\Release\VNCOptions.obj"
+".\Release\vncviewer.obj"
+".\Release\VNCviewerApp.obj"
+".\Release\VNCviewerApp32.obj"
+".\Release\ZipUnzip32.obj"
+".\Release\zrle.obj"
+".\Release\vncviewer.res"
+".\omnithread\Release\omnithread.lib"
+"\c++\ultravnc_svn\rdr\Release\rdr.lib"
+"\c++\ultravnc_svn\libjpeg\Release\libjpeg.lib"
+"N:\MAXIVISTA2.00FULL2\common\compression\zlib-1.2.3\projects\visualc6\zlib___Win32_Release\zlib.lib"
+]
+Creating command line "xilink6.exe @C:\DOCUME~1\rudi\LOCALS~1\Temp\RSPC3.tmp"
+Setting build time...
+buildtime.cpp
+<h3>Output Window</h3>
+Linking...
+IPO: performing multi-file optimizations
+IPO: generating object file ipo_36563.obj
+C:\c++\ultravnc_svn\tabbed_viewer\vncviewer.cpp(298) : (col. 1) remark: _WinMain@16 has been targeted for automatic cpu dispatch.
+C:\c++\ultravnc_svn\tabbed_viewer\ClientConnection.cpp(1481) : (col. 5) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\ClientConnection.cpp(1458) : (col. 5) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\ClientConnection.cpp(1469) : (col. 5) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\ClientConnection.cpp(1294) : (col. 1) remark: ?Authenticate@ClientConnection@@AAEXXZ has been targeted for automatic cpu dispatch.
+C:\c++\ultravnc_svn\tabbed_viewer\VNCviewerApp.cpp(66) : (col. 2) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\VNCviewerApp.cpp(40) : (col. 67) remark: ??0VNCviewerApp@@QAE@PAUHINSTANCE__@@PAD@Z has been targeted for automatic cpu dispatch.
+C:\c++\ultravnc_svn\lzo\minilzo.c(3262) : (col. 62) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\lzo\minilzo.c(3023) : (col. 59) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\lzo\minilzo.c(2938) : (col. 1) remark: _lzo1x_decompress has been targeted for automatic cpu dispatch.
+C:\c++\ultravnc_svn\tabbed_viewer\KeyMap.cpp(211) : (col. 17) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\KeyMap.cpp(259) : (col. 17) remark: LOOP WAS VECTORIZED.
+C:\c++\ultravnc_svn\tabbed_viewer\KeyMap.cpp(124) : (col. 58) remark: ?PCtoX@KeyMap@@QAE?AUKeyActionSpec@@IK@Z has been targeted for automatic cpu dispatch.
+xilink6: executing 'C:\PROGRA~1\MIAF9D~1\VC98\Bin\link.exe'
+LINK : LNK6004: Release/vncviewer.exe not found or not built by the last incremental link; performing full link
+
+
+
+<h3>Results</h3>
+vncviewer.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
