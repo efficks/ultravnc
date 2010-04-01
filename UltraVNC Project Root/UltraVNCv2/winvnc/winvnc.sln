@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zip32", "..\zipunzip_src\zi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Xregion", "..\Xregion\Xregion.vcxproj", "{74900370-5ED2-4A5E-99A8-37EFE1D27552}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "desktop_depended", "desktop_depended\desktop_depended.vcxproj", "{712F160A-5082-47F1-9294-66902E8D92CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -146,6 +148,15 @@ Global
 		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|Win32.Build.0 = Release|Win32
 		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|x64.ActiveCfg = Release|x64
 		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|x64.Build.0 = Release|x64
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|Win32.Build.0 = Debug|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|x64.ActiveCfg = Debug|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Http|Win32.ActiveCfg = Release|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Http|Win32.Build.0 = Release|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Http|x64.ActiveCfg = Release|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Release|Win32.ActiveCfg = Release|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Release|Win32.Build.0 = Release|Win32
+		{712F160A-5082-47F1-9294-66902E8D92CA}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
