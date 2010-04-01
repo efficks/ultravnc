@@ -450,7 +450,6 @@
     <None Include="res\Finger.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\ftpframe%24strcomp.class" />
     <None Include="res\FTPFrame.class" />
     <None Include="res\ico00001.ico">
       <Filter>Resource Files</Filter>
@@ -515,5 +514,6 @@
     <None Include="winvnc.exe.x86.manifest">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\ftpframe$strcomp.class" />
   </ItemGroup>
 </Project>

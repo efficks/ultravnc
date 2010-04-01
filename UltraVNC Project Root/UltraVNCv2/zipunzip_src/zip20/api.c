@@ -138,17 +138,17 @@ Options = *Opts;
 /* make copies of strings in structure if not NULL passed for empty string */
 if (Options.Date) {
   szDate[0] = '\0';
-  strncat(szDate, Options.Date, MAX_ZIP_DATE_LEN);
+  strncat_s(szDate,51, Options.Date, MAX_ZIP_DATE_LEN);
   Options.Date = szDate;
 }
 if (Options.szRootDir) {
   szRootDir[0] = '\0';
-  strncat(szRootDir, Options.szRootDir, MAX_ZIP_DIR_PATH_LEN);
+  strncat_s(szRootDir, 4099,Options.szRootDir, MAX_ZIP_DIR_PATH_LEN);
   Options.szRootDir = szRootDir;
 }
 if (Options.szTempDir) {
   szTempDir[0] = '\0';
-  strncat(szTempDir, Options.szTempDir, MAX_ZIP_DIR_PATH_LEN);
+  strncat_s(szTempDir,4099, Options.szTempDir, MAX_ZIP_DIR_PATH_LEN);
   Options.szTempDir = szTempDir;
 }
 

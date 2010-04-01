@@ -616,7 +616,7 @@ LaunchProcessWin(DWORD dwSessionId)
 								   {
 									   LockWorkStationF=(pLockWorkStation)GetProcAddress(hlibuser32, "LockWorkStation"); 
 								   }
-								if (WinStationConnectF!=NULL && WinStationConnectF!=NULL)
+								if (WinStationConnectF!=NULL && LockWorkStationF!=NULL)
 									{
 											DWORD ID=0;
 											if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
@@ -773,7 +773,7 @@ void monitor_sessions()
 					sprintf(szText," ++++++SetEvent Session change: signal tray icon to shut down\n");
 					OutputDebugString(szText);		
 			#endif
-			SetEvent(hEvent);
+			if (hEvent) SetEvent(hEvent);
 		}
 
 		
