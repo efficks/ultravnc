@@ -19,8 +19,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unz32lib", "..\zipunzip_src
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zip32", "..\zipunzip_src\zip20\windll\visualc\lib\zip32.vcxproj", "{E8BA959F-B652-4BAB-9EA7-8E9FC8D7F39C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Xregion", "..\Xregion\Xregion.vcxproj", "{74900370-5ED2-4A5E-99A8-37EFE1D27552}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "desktop_depended", "desktop_depended\desktop_depended.vcxproj", "{712F160A-5082-47F1-9294-66902E8D92CA}"
 EndProject
 Global
@@ -137,17 +135,6 @@ Global
 		{E8BA959F-B652-4BAB-9EA7-8E9FC8D7F39C}.Release|Win32.Build.0 = Release|Win32
 		{E8BA959F-B652-4BAB-9EA7-8E9FC8D7F39C}.Release|x64.ActiveCfg = Release|x64
 		{E8BA959F-B652-4BAB-9EA7-8E9FC8D7F39C}.Release|x64.Build.0 = Release|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Debug|Win32.ActiveCfg = Debug|Win32
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Debug|Win32.Build.0 = Debug|Win32
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Debug|x64.ActiveCfg = Debug|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Debug|x64.Build.0 = Debug|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Http|Win32.ActiveCfg = Release|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Http|x64.ActiveCfg = Release|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Http|x64.Build.0 = Release|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|Win32.ActiveCfg = Release|Win32
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|Win32.Build.0 = Release|Win32
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|x64.ActiveCfg = Release|x64
-		{74900370-5ED2-4A5E-99A8-37EFE1D27552}.Release|x64.Build.0 = Release|x64
 		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|Win32.Build.0 = Debug|Win32
 		{712F160A-5082-47F1-9294-66902E8D92CA}.Debug|x64.ActiveCfg = Debug|Win32
