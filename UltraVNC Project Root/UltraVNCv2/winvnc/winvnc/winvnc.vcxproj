@@ -218,7 +218,6 @@
       <AdditionalDependencies>wsock32.lib;winmm.lib;version.lib;comctl32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateManifest>true</GenerateManifest>
-      <ProgramDatabaseFile>.\..\Release/winvnc.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>

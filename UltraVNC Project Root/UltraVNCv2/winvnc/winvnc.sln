@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\libjpeg\libjpeg.vcxproj", "{181769CB-5295-452F-A421-FE1F9ED2022A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logmessages", "logger\logmessages.vcxproj", "{E543B602-5529-4B23-8D2A-3709857F5066}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "omnithread\omnithread.vcxproj", "{E52B9956-FE67-47F7-BC4F-67CC5A64B708}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdr", "..\rdr\rdr.vcxproj", "{F5244002-0FFF-4F19-A941-FCCE1861F132}"
@@ -45,18 +43,6 @@ Global
 		{181769CB-5295-452F-A421-FE1F9ED2022A}.Release|Win32.Build.0 = Release|Win32
 		{181769CB-5295-452F-A421-FE1F9ED2022A}.Release|x64.ActiveCfg = Release|x64
 		{181769CB-5295-452F-A421-FE1F9ED2022A}.Release|x64.Build.0 = Release|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Debug|Win32.Build.0 = Debug|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Debug|x64.ActiveCfg = Debug|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Debug|x64.Build.0 = Debug|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Http|Win32.ActiveCfg = Debug|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Http|Win32.Build.0 = Debug|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Http|x64.ActiveCfg = Debug|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Http|x64.Build.0 = Debug|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Release|Win32.ActiveCfg = Release|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Release|Win32.Build.0 = Release|Win32
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Release|x64.ActiveCfg = Release|x64
-		{E543B602-5529-4B23-8D2A-3709857F5066}.Release|x64.Build.0 = Release|x64
 		{E52B9956-FE67-47F7-BC4F-67CC5A64B708}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E52B9956-FE67-47F7-BC4F-67CC5A64B708}.Debug|Win32.Build.0 = Debug|Win32
 		{E52B9956-FE67-47F7-BC4F-67CC5A64B708}.Debug|x64.ActiveCfg = Debug|x64
