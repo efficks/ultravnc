@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSRC4Plugin", "MSRC4Plugin.vcproj", "{89C4742D-C030-4C6B-866D-F08A3370231A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug NoReg|Win32 = Debug NoReg|Win32
+		Debug|Win32 = Debug|Win32
+		Release NoReg|Win32 = Release NoReg|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Debug NoReg|Win32.ActiveCfg = Debug NoReg|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Debug NoReg|Win32.Build.0 = Debug NoReg|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Debug|Win32.Build.0 = Debug|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Release NoReg|Win32.ActiveCfg = Release NoReg|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Release NoReg|Win32.Build.0 = Release NoReg|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Release|Win32.ActiveCfg = Release|Win32
+		{89C4742D-C030-4C6B-866D-F08A3370231A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

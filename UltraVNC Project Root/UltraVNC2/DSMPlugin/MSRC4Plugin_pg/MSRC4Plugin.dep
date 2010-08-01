@@ -1,0 +1,57 @@
+# Microsoft Developer Studio Generated Dependency File, included by MSRC4Plugin.mak
+
+.\crypto.cpp : \
+	".\crypto.h"\
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\registry.h"\
+	".\utils.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\EnvReg.cpp : \
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\registry.h"\
+	".\utils.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\logging.cpp : \
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\registry.h"\
+	".\utils.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\MSRC4Plugin.cpp : \
+	".\crypto.h"\
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\MSRC4Plugin.h"\
+	".\registry.h"\
+	".\utils.h"\
+	".\version.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\registry.cpp : \
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\registry.h"\
+	".\utils.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\utils.cpp : \
+	".\EnvReg.h"\
+	".\logging.h"\
+	".\registry.h"\
+	".\utils.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+.\MSRC4Plugin.rc : \
+	".\version.rc"\
+	

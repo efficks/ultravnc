@@ -1,0 +1,24 @@
+﻿Build started 1/04/2010 21:33:02.
+     1>Project "H:\DATA_S\ultravnc\UltraVNC Project Root\UltraVNCv2\rdr\rdr.vcxproj" on node 23 (build target(s)).
+     1>_PrepareForBuild:
+         Creating "Debug\rdr.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I.. /I../zlib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt FdInStream.cxx FdOutStream.cxx InStream.cxx NullOutStream.cxx ZlibInStream.cxx ZlibOutStream.cxx
+         ZlibOutStream.cxx
+         ZlibInStream.cxx
+         NullOutStream.cxx
+         InStream.cxx
+         FdOutStream.cxx
+         FdInStream.cxx
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"H:\DATA_S\ultravnc\UltraVNC Project Root\UltraVNCv2\winvnc\Debug\rdr.lib" /NOLOGO Debug\FdInStream.obj Debug\FdOutStream.obj Debug\InStream.obj Debug\NullOutStream.obj Debug\ZlibInStream.obj Debug\ZlibOutStream.obj
+         rdr.vcxproj -> H:\DATA_S\ultravnc\UltraVNC Project Root\UltraVNCv2\winvnc\Debug\rdr.lib
+       _AfterBuild:
+         Deleting file "Debug\rdr.unsuccessfulbuild".
+         Touching "Debug\rdr.lastbuildstate".
+     1>Done Building Project "H:\DATA_S\ultravnc\UltraVNC Project Root\UltraVNCv2\rdr\rdr.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.19
