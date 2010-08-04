@@ -147,10 +147,6 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\Debug/winvnc.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\..\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\Debug/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <BrowseInformationFile>.\..\Debug/</BrowseInformationFile>
       <WarningLevel>Level3</WarningLevel>
@@ -166,10 +162,8 @@
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies>ws2_32.lib;winmm.lib;version.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\..\Debug/winvnc.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\Debug/winvnc.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>

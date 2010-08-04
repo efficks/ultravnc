@@ -136,10 +136,6 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\..\Debug/vnchooks.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\..\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\..\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\Debug/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -153,11 +149,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\VNCHooks.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\..\Debug/vnchooks.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>.\..\Debug/vnchooks.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
       <Profile>true</Profile>
     </Link>

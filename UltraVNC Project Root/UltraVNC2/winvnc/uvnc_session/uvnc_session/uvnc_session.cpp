@@ -23,6 +23,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
 {
+	HMODULE hUser32 = LoadLibrary(_T("user32.dll"));
+	typedef BOOL (*SetProcessDPIAwareFunc)();
+	SetProcessDPIAwareFunc setDPIAware = (SetProcessDPIAwareFunc)GetProcAddress(hUser32, "SetProcessDPIAware");
+	if (setDPIAware) setDPIAware();
+	FreeLibrary(hUser32);
+
 	vnclog.SetMode(1);
 	vnclog.SetLevel(10);
 	app=true;

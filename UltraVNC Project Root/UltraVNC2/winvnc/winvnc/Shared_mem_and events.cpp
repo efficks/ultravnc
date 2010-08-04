@@ -724,6 +724,8 @@ void reverse_connection(vncServer *server,int preset,int recon)
 	// To be really good, we should allow a display number here but
 	// for now we'll just assume we're connecting to display zero
 	tmpsock->Create();
+	if ( recon) server->AutoReconnectPort(port);
+	if ( recon) server->AutoReconnectAdr(hostname);
 	if (tmpsock->Connect(hostname, port))
 		{
 			if (id) 
