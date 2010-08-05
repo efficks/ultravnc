@@ -173,6 +173,7 @@
     <ClCompile Include="network.cpp" />
     <ClCompile Include="sc.cpp" />
     <ClCompile Include="security.cpp" />
+    <ClCompile Include="service.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

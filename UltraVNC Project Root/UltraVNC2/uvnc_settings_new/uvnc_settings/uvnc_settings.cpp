@@ -11,10 +11,9 @@
 #include "vncOSVersion.h"
 #include "../../winvnc/winvnc/controlethread.h"
 
-void
-install_service_as_admin();
-void
-uninstall_service_as_admin();
+int install_service(void);
+int uninstall_service(void);
+
 
 #define MAX_LOADSTRING 100
 #define MAXPWLEN 8
@@ -361,7 +360,6 @@ bool server_online=false;
 bool running_as_admin=false;
 bool write_permission=false;
 
-
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 {
 	if (!MTC.WSAInit()) return 0;
@@ -625,10 +623,10 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT uMsg,
 			ShellExecute(NULL, "open", "http://forum.uvnc.com", NULL, NULL, SW_SHOWNORMAL);
 			break;
 		case IDC_BUTTON5:
-			install_service_as_admin();
+			install_service();
 			break;
 		case IDC_BUTTON6:
-			uninstall_service_as_admin();
+			uninstall_service();
 			break;
 		case IDC_BUTTON7:
 			{
@@ -783,61 +781,3 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT uMsg,
 	}
     return 0;
 }
-
-
-void
-install_service_as_admin()
-{
-	char exe_file_name[MAX_PATH];
-	if (GetModuleFileName(0, exe_file_name, MAX_PATH))
-	{
-		char* p = strrchr(exe_file_name, '\\');
-		if (p == NULL)
-			return;
-		*p = '\0';
-	}
-	strcat (exe_file_name,"\\winvnc.exe");
-
-	SHELLEXECUTEINFO shExecInfo;
-	memset(&shExecInfo, 0, sizeof(SHELLEXECUTEINFO)); 
-	shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	shExecInfo.fMask = NULL;
-	shExecInfo.hwnd = GetForegroundWindow();
-	if (OSversion()==2) shExecInfo.lpVerb = "runas";
-	shExecInfo.lpFile = exe_file_name;
-	shExecInfo.lpParameters = "-install";
-	shExecInfo.lpDirectory = NULL;
-	shExecInfo.nShow = SW_SHOWNORMAL;
-	shExecInfo.hInstApp = NULL;
-	ShellExecuteEx(&shExecInfo);
-
-}
-
-void
-uninstall_service_as_admin()
-{
-	char exe_file_name[MAX_PATH];
-	if (GetModuleFileName(0, exe_file_name, MAX_PATH))
-	{
-		char* p = strrchr(exe_file_name, '\\');
-		if (p == NULL)
-			return;
-		*p = '\0';
-	}
-	strcat (exe_file_name,"\\winvnc.exe");
-
-	SHELLEXECUTEINFO shExecInfo;
-	memset(&shExecInfo, 0, sizeof(SHELLEXECUTEINFO)); 
-	shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	shExecInfo.fMask = NULL;
-	shExecInfo.hwnd = GetForegroundWindow();
-	if (OSversion()==2) shExecInfo.lpVerb = "runas";
-	shExecInfo.lpFile = exe_file_name;
-	shExecInfo.lpParameters = "-uninstall";
-	shExecInfo.lpDirectory = NULL;
-	shExecInfo.nShow = SW_SHOWNORMAL;
-	shExecInfo.hInstApp = NULL;
-	ShellExecuteEx(&shExecInfo);
-
-}
-

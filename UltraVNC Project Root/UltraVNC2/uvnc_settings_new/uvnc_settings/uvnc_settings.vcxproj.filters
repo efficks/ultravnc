@@ -75,6 +75,9 @@
     <ClCompile Include="sc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="firewall.h">
