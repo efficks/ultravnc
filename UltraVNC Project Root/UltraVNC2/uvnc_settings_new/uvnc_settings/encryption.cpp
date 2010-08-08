@@ -6,9 +6,11 @@
 extern HINSTANCE hInst;
 extern LONG UseDSMPlugin;
 char* GetDSMPluginName();
+void SetDSMPluginName(char* szDSMPlugin);
 CDSMPlugin* m_pDSMPlugin=NULL;
 CDSMPlugin* GetDSMPluginPointer() { return m_pDSMPlugin;};
 vncSetAuth m_vncauth;
+extern char DSMPlugin[128];
 
 BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 											   WPARAM wParam, LPARAM lParam)
@@ -18,6 +20,7 @@ BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 	case WM_INITDIALOG: 
 		{	
 			m_pDSMPlugin = new CDSMPlugin();
+			SetDSMPluginName(DSMPlugin);
 			SendMessage(GetDlgItem(hwnd, IDC_PLUGIN_CHECK), BM_SETCHECK, UseDSMPlugin, 0);
 			HWND hPlugins = GetDlgItem(hwnd, IDC_PLUGINS_COMBO);
 			int nPlugins = GetDSMPluginPointer()->ListPlugins(hPlugins);
@@ -124,6 +127,7 @@ BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 		case IDOK:	
 			{
 				UseDSMPlugin=SendDlgItemMessage(hwnd, IDC_PLUGIN_CHECK, BM_GETCHECK, 0, 0);
+				GetDlgItemText(hwnd, IDC_PLUGINS_COMBO, DSMPlugin, MAX_PATH);
 				
 			}
 			break;
