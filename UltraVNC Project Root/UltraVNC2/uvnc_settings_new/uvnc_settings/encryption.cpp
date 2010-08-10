@@ -2,14 +2,13 @@
 #include "resource.h"
 #include "DSMPlugin.h"
 #include <comutil.h>
-#include "vncsetauth.h"
 extern HINSTANCE hInst;
 extern LONG UseDSMPlugin;
 char* GetDSMPluginName();
 void SetDSMPluginName(char* szDSMPlugin);
 CDSMPlugin* m_pDSMPlugin=NULL;
 CDSMPlugin* GetDSMPluginPointer() { return m_pDSMPlugin;};
-vncSetAuth m_vncauth;
+//vncSetAuth m_vncauth;
 extern char DSMPlugin[128];
 
 BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
@@ -79,50 +78,7 @@ BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 				}				
 				return TRUE;
 			}
-			case IDC_MSLOGON_CHECKD:
-			{
-				BOOL bMSLogonChecked =
-				(SendDlgItemMessage(hwnd, IDC_MSLOGON_CHECKD,
-										BM_GETCHECK, 0, 0) == BST_CHECKED);
-
-				EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), bMSLogonChecked);
-				EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), bMSLogonChecked);
-
-			}
-			return TRUE;
-			case IDC_MSLOGON:
-			{
-				// Marscha@2004 - authSSP: if "New MS-Logon" is checked,
-				// call vncEditSecurity from SecurityEditor.dll,
-				// else call "old" dialog.
-				BOOL bNewMSLogonChecked =
-				(SendDlgItemMessage(hwnd, IDC_NEW_MSLOGON,
-										BM_GETCHECK, 0, 0) == BST_CHECKED);
-				if (bNewMSLogonChecked) 
-					{
-						typedef void (*vncEditSecurityFn) (HWND hwnd, HINSTANCE hInstance);
-						vncEditSecurityFn vncEditSecurity = 0;
-						char szCurrentDir[MAX_PATH];
-							if (GetModuleFileName(NULL, szCurrentDir, MAX_PATH)) {
-								char* p = strrchr(szCurrentDir, '\\');
-								*p = '\0';
-								strcat (szCurrentDir,"\\authSSP.dll");
-							}
-						HMODULE hModule = LoadLibrary(szCurrentDir);
-						if (hModule) {
-							vncEditSecurity = (vncEditSecurityFn) GetProcAddress(hModule, "vncEditSecurity");
-							HRESULT hr = CoInitialize(NULL);
-							vncEditSecurity(NULL, hInst);
-							CoUninitialize();
-							FreeLibrary(hModule);
-						}
-					}
-				 else { 
-					// Marscha@2004 - authSSP: end of change
-					m_vncauth.Show(TRUE);
-				}
-			}
-			return TRUE;
+			
 
 		case IDOK:	
 			{
