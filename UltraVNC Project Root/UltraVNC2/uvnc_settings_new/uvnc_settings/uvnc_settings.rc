@@ -174,10 +174,8 @@ BEGIN
     PUSHBUTTON      "Configure MS Logon Groups",IDC_MSLOGON,64,102,132,14
     GROUPBOX        "Authentication",IDC_STATIC,11,11,236,110
     GROUPBOX        "Advanced",IDC_STATIC,11,124,236,40
-    CONTROL         "Allow shutdown UltraVnc",IDC_ALLOWSHUTDOWN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,131,95,10
     CONTROL         "Password Required",IDC_PASSRECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,142,77,10
     CONTROL         "Allow edit clients",IDC_ALLOWEDIT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,142,69,10
-    CONTROL         "Allow properties",IDC_ALLOWPROP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,151,67,10
     LTEXT           "View-Only Password:",IDC_PASSWORD_LABEL2,23,39,69,11,SS_CENTERIMAGE
     EDITTEXT        IDC_PASSWORD2,100,39,74,13,ES_PASSWORD | ES_AUTOHSCROLL
 END
@@ -263,8 +261,6 @@ BEGIN
     GROUPBOX        "Misc",IDC_STATIC,3,4,253,67
     CONTROL         "Disable Tray icon",IDC_DISABLETRAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,14,70,10
     LTEXT           "Default Server screen scale:  1/",IDC_STATIC,13,25,108,8
-    CONTROL         "Disable ini file settings and use registry",IDC_DISINI,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,34,140,10
     EDITTEXT        IDC_SCALE,119,21,21,14,ES_AUTOHSCROLL
     CONTROL         "Log debug infos",IDC_LOG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,84,67,10
     CONTROL         "Log to video",IDC_VIDEO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,128,55,10

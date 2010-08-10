@@ -120,8 +120,7 @@ unsigned int hiddenwindow::run()
 		bool_RemoveAeroEnabled=true;
 		bool_RemoveWallpaperEnabled=serverSharedmem->m_remove_wallpaper;
 		bool_RemoveAeroEnabled=serverSharedmem->m_remove_Aero;
-		bool_disableTrayIcon=serverSharedmem->m_disableTrayIcon;
-		bool_AllowEditClients=serverSharedmem->m_AllowEditClients;
+		bool_GetAllowEditClients=serverSharedmem->m_AllowEditClients;
 		
 		// TODO: Place code here.
 		TrayIcon= new CSystemTray;
@@ -388,12 +387,14 @@ LRESULT CALLBACK hiddenwindow::WndProc(HWND hWndProc, UINT message, WPARAM wPara
 			}
 			if (wParam==200)
 			{
-			//hide/show icon
-			//char status=1;
-			//bool bool_status=true;
-			//bool_status=status;
-			if (_this->bool_disableTrayIcon) _this->TrayIcon->HideIcon();
+			bool_GetAllowEditClients=_this->serverSharedmem->m_AllowEditClients;
+			if (_this->serverSharedmem->m_disableTrayIcon) _this->TrayIcon->HideIcon();
 			else _this->TrayIcon->ShowIcon();
+
+			if (_this->bool_RemoveWallpaperEnabled!=_this->serverSharedmem->m_remove_wallpaper || _this->bool_RemoveAeroEnabled!=_this->serverSharedmem->m_remove_Aero)
+			{
+				DestroyWindow(hWndProc);
+			}
 			// allow to kill cleints
 			//connect/idle change icon
 			int int_status;
@@ -597,7 +598,7 @@ DWORD hiddenwindow::GetCurrentSessionID()
 
 void hiddenwindow::Wallpaperaero()
 {
-			if (bool_disableTrayIcon) TrayIcon->HideIcon();
+			if (serverSharedmem->m_disableTrayIcon) TrayIcon->HideIcon();
 			else TrayIcon->ShowIcon();
 			// allow to kill cleints
 			//connect/idle change icon

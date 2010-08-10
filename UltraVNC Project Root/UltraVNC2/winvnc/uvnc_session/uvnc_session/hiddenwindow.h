@@ -70,8 +70,6 @@ private:
 	comm_serv KillAuthClients;
 	pProcessIdToSessionId WTSProcessIdToSessionIdF;
 	 _shareservermem *serverSharedmem;
-	bool bool_disableTrayIcon;
-	bool bool_AllowEditClients;
 };
 
 #endif

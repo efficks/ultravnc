@@ -178,6 +178,8 @@ ReadProperties::ApplyUserPrefs()
 	m_server->SetFTTimeout(m_ftTimeout);
     m_server->SetKeepAliveInterval(m_keepAliveInterval);
 
+	m_server->SetAllowEditClients(m_alloweditclients);
+
 
 	m_server->EnableFileTransfer(m_pref_EnableFileTransfer);
 	m_server->FTUserImpersonation(m_pref_FTUserImpersonation); // sf@2005
@@ -246,6 +248,7 @@ ReadProperties::ApplyUserPrefs()
 	else
 	{
 		vnclog.Print(LL_INTINFO, VNCLOG("$$$$$$$$$$ ApplyUserPrefs - Plugin NOT enabled \n"));
+		m_server->GetDSMPluginPointer()->SetEnabled(false);
 	}
 
 	 m_server->TurboMode(m_pref_TurboMode);
@@ -353,9 +356,11 @@ void ReadProperties::LoadFromIniFile()
 	m_pref_Virtual=myIniFile.ReadInt("poll", "EnableVirtual", m_pref_Virtual);	
 	m_pref_SingleWindow=myIniFile.ReadInt("poll","SingleWindow",m_pref_SingleWindow);
 	myIniFile.ReadString("poll", "SingleWindowName", m_pref_szSingleWindowName,32);
+
 	m_allowshutdown = myIniFile.ReadInt("admin", "AllowShutdown", m_allowshutdown);
 	m_allowproperties = myIniFile.ReadInt("admin", "AllowProperties", m_allowproperties);
 	m_alloweditclients = myIniFile.ReadInt("admin", "AllowEditClients", m_alloweditclients);
+
     m_ftTimeout = myIniFile.ReadInt("admin", "FileTransferTimeout", m_ftTimeout);
     if (m_ftTimeout > 60)
         m_ftTimeout = 60;

@@ -414,9 +414,9 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 			SendMessage(GetDlgItem(hwnd, IDC_MSLOGON_CHECKD), BM_SETCHECK, MSLogonRequired, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_NEW_MSLOGON), BM_SETCHECK, NewMSLogon, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_PASSRECK), BM_SETCHECK, AuthRequired, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_ALLOWSHUTDOWN), BM_SETCHECK, AllowShutdown, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_ALLOWSHUTDOWN), BM_SETCHECK, AllowShutdown, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_ALLOWEDIT), BM_SETCHECK, AllowEditClients, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_ALLOWPROP), BM_SETCHECK, AllowProperties, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_ALLOWPROP), BM_SETCHECK, AllowProperties, 0);
 			SetDlgItemText(hwnd, IDC_PASSWORD, plaintext);
 			 SetDlgItemText(hwnd, IDC_PASSWORD2, plaintext3);
 			BOOL bMSLogonChecked =
@@ -485,9 +485,9 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 			MSLogonRequired=SendDlgItemMessage(hwnd, IDC_MSLOGON_CHECKD, BM_GETCHECK, 0, 0);
 			NewMSLogon=SendDlgItemMessage(hwnd, IDC_NEW_MSLOGON, BM_GETCHECK, 0, 0);
 			AuthRequired=SendDlgItemMessage(hwnd, IDC_PASSRECK, BM_GETCHECK, 0, 0);
-			AllowShutdown=SendDlgItemMessage(hwnd, IDC_ALLOWSHUTDOWN, BM_GETCHECK, 0, 0);
+			//AllowShutdown=SendDlgItemMessage(hwnd, IDC_ALLOWSHUTDOWN, BM_GETCHECK, 0, 0);
 			AllowEditClients=SendDlgItemMessage(hwnd, IDC_ALLOWEDIT, BM_GETCHECK, 0, 0);
-			AllowProperties=SendDlgItemMessage(hwnd, IDC_ALLOWPROP, BM_GETCHECK, 0, 0);
+			//AllowProperties=SendDlgItemMessage(hwnd, IDC_ALLOWPROP, BM_GETCHECK, 0, 0);
 
 			char plaintext2[MAXPWLEN+1];
 			int len = GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);

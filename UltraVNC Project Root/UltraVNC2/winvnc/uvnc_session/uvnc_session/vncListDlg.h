@@ -41,7 +41,6 @@ public:
 	void Display();
 	BOOL m_dlgvisible;
 private:
-	comm_serv GetAllowEditClients;
 	comm_serv KillClient; 
 	comm_serv TextChatClient; 
 	comm_serv ListAuthClients; 

@@ -24,7 +24,7 @@ BOOL CALLBACK DlgProcMISC(HWND hwnd, UINT uMsg,
 			initdone6=false;
 			SendMessage( GetDlgItem(hwnd, IDC_DISABLETRAY), BM_SETCHECK, DisableTrayIcon, 0);
 			SendMessage( GetDlgItem(hwnd, IDC_KICKRDP), BM_SETCHECK, kickrdp, 0);
-			SendMessage( GetDlgItem(hwnd, IDC_DISINI), BM_SETCHECK, BUseRegistry, 0);
+			//SendMessage( GetDlgItem(hwnd, IDC_DISINI), BM_SETCHECK, BUseRegistry, 0);
 			SetDlgItemInt(hwnd, IDC_SCALE, DefaultScale, false);
 			SetDlgItemText(hwnd, IDC_SCL, servicecmdline);
 			bool debug=false;
@@ -120,7 +120,7 @@ BOOL CALLBACK DlgProcMISC(HWND hwnd, UINT uMsg,
 		case IDOK:	
 			{
 				DisableTrayIcon=IsDlgButtonChecked(hwnd, IDC_DISABLETRAY);
-				BUseRegistry=IsDlgButtonChecked(hwnd, IDC_DISINI);
+				//BUseRegistry=IsDlgButtonChecked(hwnd, IDC_DISINI);
 				kickrdp=IsDlgButtonChecked(hwnd, IDC_KICKRDP);
 				DefaultScale=GetDlgItemInt(hwnd, IDC_SCALE, NULL, FALSE);
 				if (DefaultScale < 1 || DefaultScale > 9) DefaultScale = 1;
