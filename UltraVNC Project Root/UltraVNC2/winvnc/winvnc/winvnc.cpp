@@ -379,6 +379,34 @@ int WinVNCAppMain()
 {
 	SetOSVersion();
 	Init_shared_mem_and_events();
+	vnclog.Print(LL_INTINFO, VNCLOG("***** DBG - WinVNCAPPMain\n"));
+#ifdef CRASH_ENABLED
+	LPVOID lpvState = Install(NULL,  "rudi.de.vos@skynet.be", "UltraVnc");
+#endif
+
+	// Set this process to be the last application to be shut down.
+	// Check for previous instances of WinVNC!
+	vncInstHandler *instancehan=new vncInstHandler;
+
+	if (!instancehan->Init())
+		{	
+    		vnclog.Print(LL_INTINFO, VNCLOG("%s -- exiting\n"), sz_ID_ANOTHER_INST);
+			// We don't allow multiple instances!
+			if (!fRunningFromExternalService)
+				MessageBox(NULL, sz_ID_ANOTHER_INST, szAppName, MB_OK);		
+
+			if (instancehan!=NULL) delete instancehan;
+
+			vnclog.Print(LL_STATE, VNCLOG("################## SHUTING DOWN SERVER ####################\n"));
+
+			//adzm 2009-06-20
+			if (g_szRepeaterHost) {
+				delete[] g_szRepeaterHost;
+				g_szRepeaterHost = NULL;
+			}
+		return 0;
+		}
+
 	if (!vncService::RunningAsService())
 	{
 		char WORKDIR[MAX_PATH];
@@ -403,23 +431,6 @@ int WinVNCAppMain()
 		shExecInfo.hInstApp = NULL;
 		ShellExecuteEx(&shExecInfo);
 	}
-	vnclog.Print(LL_INTINFO, VNCLOG("***** DBG - WinVNCAPPMain\n"));
-#ifdef CRASH_ENABLED
-	LPVOID lpvState = Install(NULL,  "rudi.de.vos@skynet.be", "UltraVnc");
-#endif
-
-	// Set this process to be the last application to be shut down.
-	// Check for previous instances of WinVNC!
-	vncInstHandler *instancehan=new vncInstHandler;
-
-	if (!instancehan->Init())
-		{	
-    		vnclog.Print(LL_INTINFO, VNCLOG("%s -- exiting\n"), sz_ID_ANOTHER_INST);
-			// We don't allow multiple instances!
-			if (!fRunningFromExternalService)
-				MessageBox(NULL, sz_ID_ANOTHER_INST, szAppName, MB_OK);
-			return 0;
-		}
 
 
 	//vnclog.Print(LL_INTINFO, VNCLOG("***** DBG - Previous instance checked - Trying to create server\n"));
@@ -489,18 +500,19 @@ int WinVNCAppMain()
 		}
 		vnclog.Print(LL_STATE, VNCLOG("################## Closing Imp Thread\n"));
 	}
-	Closebyservice.Call_Fnction_no_feedback();
 
-	if (instancehan!=NULL)
-		delete instancehan;
+		Closebyservice.Call_Fnction_no_feedback();
 
-	vnclog.Print(LL_STATE, VNCLOG("################## SHUTING DOWN SERVER ####################\n"));
+		if (instancehan!=NULL)
+			delete instancehan;
 
-	//adzm 2009-06-20
-	if (g_szRepeaterHost) {
-		delete[] g_szRepeaterHost;
-		g_szRepeaterHost = NULL;
-	}
+		vnclog.Print(LL_STATE, VNCLOG("################## SHUTING DOWN SERVER ####################\n"));
+
+		//adzm 2009-06-20
+		if (g_szRepeaterHost) {
+			delete[] g_szRepeaterHost;
+			g_szRepeaterHost = NULL;
+		}
 	return 1;
 };
 
