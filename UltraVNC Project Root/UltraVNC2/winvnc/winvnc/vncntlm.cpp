@@ -316,7 +316,7 @@ if (strcmp(pszgroup1,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "workgrpdomnt4.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;
@@ -339,7 +339,7 @@ if (strcmp(pszgroup1,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "authadmin.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;
@@ -435,7 +435,7 @@ if (strcmp(pszgroup2,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "workgrpdomnt4.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;
@@ -458,7 +458,7 @@ if (strcmp(pszgroup2,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "authadmin.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;
@@ -554,7 +554,7 @@ if (strcmp(pszgroup3,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "workgrpdomnt4.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;
@@ -577,7 +577,7 @@ if (strcmp(pszgroup3,"")!=NULL)
 				CoUninitialize();
 				FreeLibrary(hModule);
 			}
-		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, sz_ID_WARNING, MB_OK);
+		else MessageBox(NULL, sz_ID_AUTH_NOT_FO, "authadmin.dll", MB_OK);
 
 	}
 	if (result==1) goto accessOK;

@@ -127,6 +127,10 @@ ReadProperties::Init(vncServer *server)
 	m_server->GetPassword(passwd);
 	{
 	    vncPasswd::ToText plain(passwd);
+		if (strlen(passwd) ==0)
+		{
+			int a=0;
+		}
 	    if (strlen(plain) == 0)
 				if(m_server->AuthRequired()) {
 					PostQuitMessage(0);
@@ -335,6 +339,14 @@ void ReadProperties::LoadFromIniFile()
 	// Load the password
 	myIniFile.ReadPassword(m_pref_passwd,MAXPWLEN);
 	myIniFile.ReadPassword2(m_pref_passwd2,MAXPWLEN); //PGM
+
+	// to support 00000000 as NULL passwd we need to check and clear
+	if (strlen(m_pref_passwd)==0)
+	{
+		vncPasswd::FromClear crypt;
+		memcpy(m_pref_passwd, crypt, MAXPWLEN);
+	}
+
 	// Remote access prefs
 	m_pref_EnableRemoteInputs=myIniFile.ReadInt("admin", "InputsEnabled", m_pref_EnableRemoteInputs);
 	m_pref_LockSettings=myIniFile.ReadInt("admin", "LockSetting", m_pref_LockSettings);

@@ -145,7 +145,7 @@ BEGIN
     ID_WVNC                 "WVNC"
     ID_AUTHAD_NOT_FO        "You selected ms-logon, but the authad.dll\nwas not found.Check you installation"
     ID_WARNING              "WARNING"
-    ID_AUTH_NOT_FO          "You selected ms-logon, but the auth.dll\nwas not found.Check you installation"
+    ID_AUTH_NOT_FO          "You selected ms-logon, but dll (see caption) not found.Check you installation"
     ID_DESKTOP_BITBLT_ROOT  "remoteDesktop : root device doesn't support BitBlt\nWinVNC cannot be used with this graphic device driver"
     ID_DESKTOP_BITBLT_MEM   "remoteDesktop : memory device doesn't support GetDIBits\nWinVNC cannot be used with this graphics device driver"
     ID_DESKTOP_PLANAR_NOTC  "remoteDesktop : current display is PLANAR, not CHUNKY!\nWinVNC cannot be used with this graphics device driver"
