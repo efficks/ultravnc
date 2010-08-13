@@ -80,9 +80,9 @@ BOOL CALLBACK DlgProcSC(HWND hwnd, UINT uMsg,
 		return 0;	
 
 	case WM_SHOWWINDOW:
-		SetDlgItemText(hwnd, IDC_S_PRESET1D, preset1D);
+			SetDlgItemText(hwnd, IDC_S_PRESET1D, preset1D);
 			SetDlgItemText(hwnd, IDC_S_PRESET2D, preset2D);
-			SetDlgItemText(hwnd, IDC_S_PRESET3D, preset2D);
+			SetDlgItemText(hwnd, IDC_S_PRESET3D, preset3D);
 			if (strlen(preset1D)==0)
 				EnableWindow(GetDlgItem(hwnd, IDC_B_PRESET1), false);
 			else

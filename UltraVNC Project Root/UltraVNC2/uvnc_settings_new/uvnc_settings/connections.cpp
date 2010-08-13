@@ -25,7 +25,7 @@ BOOL CALLBACK DlgProcCON(HWND hwnd, UINT uMsg,
 			EnableWindow(GetDlgItem(hwnd, IDC_DREFUSE), queryEnabled);
 			EnableWindow(GetDlgItem(hwnd, IDC_DACCEPT), queryEnabled);
 			EnableWindow(GetDlgItem(hwnd, IDC_QNOLOGON), queryEnabled);
-			EnableWindow(GetDlgItem(hwnd, IDC_AUTHHOST), queryEnabled);
+			//EnableWindow(GetDlgItem(hwnd, IDC_AUTHHOST), queryEnabled);
 
 			SendMessage(GetDlgItem(hwnd, IDC_QNOLOGON), BM_SETCHECK, QueryIfNoLogon, 0);
 			SetDlgItemInt(hwnd,IDQUERYTIMEOUT, QueryTimeout, FALSE);
@@ -103,7 +103,7 @@ BOOL CALLBACK DlgProcCON(HWND hwnd, UINT uMsg,
 			EnableWindow(GetDlgItem(hwnd, IDC_DREFUSE), queryEnabled);
 			EnableWindow(GetDlgItem(hwnd, IDC_DACCEPT), queryEnabled);
 			EnableWindow(GetDlgItem(hwnd, IDC_QNOLOGON), queryEnabled);
-			EnableWindow(GetDlgItem(hwnd, IDC_AUTHHOST), queryEnabled);
+			//EnableWindow(GetDlgItem(hwnd, IDC_AUTHHOST), queryEnabled);
 			}
 			break;
 		case IDOK:	

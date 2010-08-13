@@ -181,6 +181,7 @@ public:
 	void Call_Fnction(char *databuffer_IN,char *databuffer_OUT);
 	void Call_Fnction_no_feedback();
 	void Call_Fnction_Long(char *databuffer_IN,char *databuffer_OUT);
+	void Call_Fnction_Long_Timeout(char *databuffer_IN,char *databuffer_OUT,int timeout);
 	HANDLE InitFileHandle(char *name,int IN_datasize_IN,int IN_datasize_OUT,bool app,bool master);
 	void Force_unblock();
 	void Release();

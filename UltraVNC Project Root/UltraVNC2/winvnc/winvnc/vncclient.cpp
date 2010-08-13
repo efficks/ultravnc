@@ -899,11 +899,11 @@ vncClientThread::InitAuthenticate()
 	ad.QueryTimeout=m_server->QueryTimeout();
 	ad.verified=verified;
 	unsigned char value;
-	if (verified == aqrQuery) AcceptDialogFn.Call_Fnction_Long((char*)&ad,(char*)&value);
+	if (verified == aqrQuery) AcceptDialogFn.Call_Fnction_Long_Timeout((char*)&ad,(char*)&value,ad.QueryTimeout);
 	if (value==99) return false;
-	else if( value==0)  verified=vncServer::aqrAccept;
-	else if (value==1)  verified=vncServer::aqrQuery;
-	else if (value==1)  verified=vncServer::aqrReject;
+	else if( value==1)  verified=vncServer::aqrAccept;
+	else if (value==0)  verified=vncServer::aqrQuery;
+	else if (value==2)  verified=vncServer::aqrReject;
 
 	if (verified == vncServer::aqrReject) {
 		CARD32 auth_val = Swap32IfLE(rfbConnFailed);

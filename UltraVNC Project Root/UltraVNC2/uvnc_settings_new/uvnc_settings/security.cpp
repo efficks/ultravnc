@@ -493,7 +493,7 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 			int len = GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
 			if (len == 0)
 					{
-						strcpy(passwd,"");
+						memset(passwd,0,MAXPWLEN);
 					}
 			else
 					{
@@ -503,7 +503,7 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 			int len2 = GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
 			if (len2 == 0)
 					{
-						strcpy(passwd2,"");
+						memset(passwd2,0,MAXPWLEN);
 					}
 			else
 					{

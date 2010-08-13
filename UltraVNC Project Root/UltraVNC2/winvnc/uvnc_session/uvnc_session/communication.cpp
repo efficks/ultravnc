@@ -441,6 +441,37 @@ void comm_serv::Call_Fnction_Long(char *databuffer_IN,char *databuffer_OUT)
 	LeaveCriticalSection(&CriticalSection_OUT);
 }
 
+//service call session function
+void comm_serv::Call_Fnction_Long_Timeout(char *databuffer_IN,char *databuffer_OUT,int timeout)
+{
+	timeout=(timeout+1)*1000;
+	EnterCriticalSection(&CriticalSection_IN);
+	memcpy(data_IN,databuffer_IN,datasize_IN);
+	ResetEvent(event_E_IN_DONE);
+	ResetEvent(event_E_OUT);
+	SetEvent(event_E_IN);
+	DWORD r=WaitForSingleObject(event_E_IN_DONE,timeout);		
+	LeaveCriticalSection(&CriticalSection_IN);
+	if (r==WAIT_TIMEOUT) 
+	{
+		unsigned char value=99;
+		memcpy(databuffer_OUT,&value,datasize_OUT);
+		return;
+	}
+
+	EnterCriticalSection(&CriticalSection_OUT);
+	r=WaitForSingleObject(event_E_OUT,timeout);
+	memcpy(databuffer_OUT,data_OUT,datasize_OUT);
+	SetEvent(event_E_OUT_DONE);
+	if (r==WAIT_TIMEOUT) 
+	{
+		unsigned char value=99;
+		memcpy(databuffer_OUT,&value,datasize_OUT);
+		return;
+	}
+	LeaveCriticalSection(&CriticalSection_OUT);
+}
+
 HANDLE comm_serv::GetEvent()
 {
 	return event_E_IN;

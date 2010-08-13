@@ -110,7 +110,8 @@ void CSystemTray::Initialise()
 #ifdef SYSTEMTRAY_USEW2K
     OSVERSIONINFO os = { sizeof(os) };
     GetVersionEx(&os);
-    m_bWin2K = ( VER_PLATFORM_WIN32_NT == os.dwPlatformId && os.dwMajorVersion >= 5 );
+	// nis_hidden seems to fail on xp systems ... while it is supported from w2K
+    m_bWin2K = ( VER_PLATFORM_WIN32_NT == os.dwPlatformId && os.dwMajorVersion >= 6 );
 #else
     m_bWin2K = FALSE;
 #endif
