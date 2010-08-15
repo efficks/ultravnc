@@ -239,10 +239,10 @@ DWORD WINAPI imp_desktop_thread2(LPVOID lpParam)
 
 										tmpsock->Send(finalidcode,250);
 										tmpsock->SetTimeout(0);
-										server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, finalidcode, hostname, port);
+										server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, finalidcode, hostname, port,true);
 									} else {
 
-										server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, hostname, port);				
+										server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, hostname, port,true);				
 									}
 								status=true;
 							}
@@ -752,10 +752,10 @@ void reverse_connection(vncServer *server,int preset,int recon)
 					if ( recon) server->AutoReconnectId(finalidcode);
 					tmpsock->Send(finalidcode,250);
 					tmpsock->SetTimeout(0);
-					server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, finalidcode, hostname, port);
+					server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, finalidcode, hostname, port,true);
 				} 
 			else {
-					server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, hostname, port);				
+					server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, hostname, port,true);				
 				}
 			}
 		else

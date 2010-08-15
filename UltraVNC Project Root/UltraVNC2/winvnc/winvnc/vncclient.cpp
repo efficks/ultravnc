@@ -71,7 +71,8 @@
 #include "common/win32_helpers.h"
 
 bool isDirectoryTransfer(const char *szFileName);
-extern BOOL SPECIAL_SC_PROMPT;
+//extern BOOL SPECIAL_SC_PROMPT;
+extern BOOL SPECIAL_SC_PROMPT_COMBINED;
 extern BOOL SPECIAL_SC_EXIT;
 int getinfo(char mytext[1024]);
 
@@ -800,7 +801,7 @@ vncClientThread::InitVersion()
 	{
 		// Generate the server's protocol version
 		rfbProtocolVersionMsg protocolMsg;
-		if (SPECIAL_SC_PROMPT)
+		if (SPECIAL_SC_PROMPT_COMBINED)
 		{
 			//This break rfb protocol, SC in ultravnc only  rfb 3.14/16
 			sprintf((char *)protocolMsg,
@@ -819,7 +820,7 @@ vncClientThread::InitVersion()
 		// Send the protocol message
 		//m_socket->SetTimeout(0); // sf@2006 - Trying to fix neverending authentication bug - Not sure it's a good idea...
 		//adzm 2009-06-20 - if SC, wait for a connection, rather than timeout too quickly.
-		if (SPECIAL_SC_PROMPT) {
+		if (SPECIAL_SC_PROMPT_COMBINED) {
 			//adzm 2009-06-20 - TODO - perhaps this should only occur if we can determine we are using a repeater?
 			m_socket->SetTimeout(0);
 		}
@@ -854,7 +855,7 @@ vncClientThread::InitVersion()
 	vnclog.Print(LL_INTINFO, VNCLOG("m_ms_logon set to %s"), m_ms_logon ? "true" : "false");
 	//SC
 	if (minor == 4 || minor == 6) m_client->SetUltraViewer(true);
-	else if ((minor ==14 || minor ==16)&& SPECIAL_SC_PROMPT)
+	else if ((minor ==14 || minor ==16)&& SPECIAL_SC_PROMPT_COMBINED)
 	{
 		m_client->SetUltraViewer(true);
 		char mytext[1024];

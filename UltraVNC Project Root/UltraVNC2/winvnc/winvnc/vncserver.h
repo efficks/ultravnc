@@ -103,7 +103,7 @@ public:
 	// adzm 2009-08-02
 	virtual vncClientId AddClient(VSocket *socket,
 		BOOL auth, BOOL shared, int capability,
-		/*BOOL keysenabled, BOOL ptrenabled,*/rfbProtocolVersionMsg *protocolMsg,VString szRepeaterID,VString szHost,VCard port);
+		/*BOOL keysenabled, BOOL ptrenabled,*/rfbProtocolVersionMsg *protocolMsg,VString szRepeaterID,VString szHost,VCard port,bool revers_connection);
 
 	virtual BOOL Authenticated(vncClientId client);
 	virtual void KillClient(vncClientId client);

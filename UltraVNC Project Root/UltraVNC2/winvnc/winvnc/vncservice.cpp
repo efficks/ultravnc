@@ -67,7 +67,7 @@ pProcessIdToSessionId WTSProcessIdToSessionIdF=NULL;
 #define SM_REMOTESESSION 0X1000
 #endif
 
-extern BOOL SPECIAL_SC_PROMPT;
+//extern BOOL SPECIAL_SC_PROMPT;
 
 //void ClearKeyState(BYTE key);
 DWORD GetCurrentSessionID()

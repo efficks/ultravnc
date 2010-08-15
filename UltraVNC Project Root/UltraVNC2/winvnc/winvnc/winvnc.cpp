@@ -585,11 +585,11 @@ MENU_ADD_CLIENT_MSG_fn( WPARAM wParam, LPARAM lParam,vncServer *m_server)
 						// adzm 2009-07-05 - repeater IDs
 						// Add the new client to this server
 						// adzm 2009-08-02
-						m_server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, szId, szAdrName, nport);
+						m_server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, szId, szAdrName, nport,true);
 					} else {
 						// Add the new client to this server
 						// adzm 2009-08-02
-						m_server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, szAdrName, nport);
+						m_server->AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, szAdrName, nport,true);
 					}
 				} else {
 					delete tmpsock;

@@ -48,6 +48,7 @@ unsigned int G_SENDBUFFER=8192;
 
 BOOL SPECIAL_SC_EXIT=false;
 BOOL SPECIAL_SC_PROMPT=false;
+BOOL SPECIAL_SC_PROMPT_COMBINED=false;
 
 // Constructor & Destructor
 ReadProperties::ReadProperties()

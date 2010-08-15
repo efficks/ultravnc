@@ -67,6 +67,7 @@ void*	vncServer::pThis;
 
 // adzm 2009-07-05
 extern BOOL SPECIAL_SC_PROMPT;
+extern BOOL SPECIAL_SC_PROMPT_COMBINED;
 extern comm_serv NotifyBalloon;
 
 
@@ -479,7 +480,7 @@ vncClientId vncServer::AddClient(VSocket *socket,
 					 /*BOOL keysenabled, BOOL ptrenabled,*/
 					 rfbProtocolVersionMsg *protocolMsg)
 {
-	return AddClient(socket, auth, shared, /*FALSE,*/ 0, /*TRUE, TRUE,*/protocolMsg, NULL, NULL, 0);
+	return AddClient(socket, auth, shared, /*FALSE,*/ 0, /*TRUE, TRUE,*/protocolMsg, NULL, NULL, 0,false);
 }
 
 // adzm 2009-07-05 - repeater IDs
@@ -491,8 +492,10 @@ vncClientId vncServer::AddClient(VSocket *socket,
 					 rfbProtocolVersionMsg *protocolMsg,
 					 VString szRepeaterID,
 					 VString szHost,
-					 VCard port)
+					 VCard port,
+					 bool reverse_connection)
 {
+	SPECIAL_SC_PROMPT_COMBINED=(SPECIAL_SC_PROMPT && reverse_connection);
 	vnclog.Print(LL_STATE, VNCLOG("AddClient() started\n"));
 	
 	vncClient *client;
@@ -557,7 +560,7 @@ vncClientId vncServer::AddClient(VSocket *socket,
 	vnclog.Print(LL_INTINFO, VNCLOG("AddClient() done\n"));
 
 	// adzm 2009-07-05 - Balloon
-	if (SPECIAL_SC_PROMPT) {
+	if (SPECIAL_SC_PROMPT_COMBINED) {
 		vncClientList::iterator i;
 		char szInfo[256];
 		strcpy(szInfo, "Waiting for connection... ");
@@ -707,7 +710,7 @@ vncServer::Authenticated(vncClientId clientid)
 	DoNotify(WM_SRV_CLIENT_AUTHENTICATED, 0, 0);
 
 	// adzm 2009-07-05 - Balloon
-	if (SPECIAL_SC_PROMPT && (client != NULL) ) {
+	if (SPECIAL_SC_PROMPT_COMBINED && (client != NULL) ) {
 		char szInfo[256];
 
 		if (client->GetRepeaterID() && (strlen(client->GetRepeaterID()) > 0) ) {
@@ -2486,11 +2489,11 @@ void vncServer::_actualTimerRetryHandler()
 					tmpsock->SetTimeout(0);
 					// adzm 2009-07-05 - repeater IDs
 					// Add the new client to this server
-					AddClient(tmpsock, TRUE, TRUE, 0, NULL, m_szAutoReconnectId, m_szAutoReconnectAdr, m_AutoReconnectPort);
+					AddClient(tmpsock, TRUE, TRUE, 0, NULL, m_szAutoReconnectId, m_szAutoReconnectAdr, m_AutoReconnectPort,true);
 				} else {
 					// Add the new client to this server
 					// adzm 2009-08-02
-					AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, m_szAutoReconnectAdr, m_AutoReconnectPort);
+					AddClient(tmpsock, TRUE, TRUE, 0, NULL, NULL, m_szAutoReconnectAdr, m_AutoReconnectPort,true);
 				}
 			} else {
 				delete tmpsock;
