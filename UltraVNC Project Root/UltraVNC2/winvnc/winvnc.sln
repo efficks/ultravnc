@@ -31,8 +31,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uvnc_session", "uvnc_sessio
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uvnc_settings", "..\uvnc_settings_new\uvnc_settings\uvnc_settings.vcxproj", "{3B4D8565-E321-48B6-BF15-4EB7ADEC6BFC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCHook", "schook_private\SCHook.vcxproj", "{615BBC95-8125-4FFD-B6D5-C7D851D72529}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -169,17 +167,6 @@ Global
 		{3B4D8565-E321-48B6-BF15-4EB7ADEC6BFC}.Release|Win32.Build.0 = Release|Win32
 		{3B4D8565-E321-48B6-BF15-4EB7ADEC6BFC}.Release|x64.ActiveCfg = Release|x64
 		{3B4D8565-E321-48B6-BF15-4EB7ADEC6BFC}.Release|x64.Build.0 = Release|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Debug|Win32.ActiveCfg = Debug|Win32
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Debug|Win32.Build.0 = Debug|Win32
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Debug|x64.ActiveCfg = Debug|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Debug|x64.Build.0 = Debug|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Http|Win32.ActiveCfg = Release|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Http|x64.ActiveCfg = Release|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Http|x64.Build.0 = Release|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Release|Win32.ActiveCfg = Release|Win32
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Release|Win32.Build.0 = Release|Win32
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Release|x64.ActiveCfg = Release|x64
-		{615BBC95-8125-4FFD-B6D5-C7D851D72529}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

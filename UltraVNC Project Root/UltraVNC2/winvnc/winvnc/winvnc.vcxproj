@@ -772,9 +772,6 @@
     <ProjectReference Include="..\omnithread\omnithread.vcxproj">
       <Project>{e52b9956-fe67-47f7-bc4f-67cc5a64b708}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\schook_private\SCHook.vcxproj">
-      <Project>{615bbc95-8125-4ffd-b6d5-c7d851d72529}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
