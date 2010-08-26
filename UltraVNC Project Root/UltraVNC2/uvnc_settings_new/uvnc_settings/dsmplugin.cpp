@@ -12,8 +12,8 @@
 #include <string.h>
 #include "DSMPlugin.h"
 #define MAXPWLEN 8
-extern char passwd[MAXPWLEN];
-extern char passwd2[MAXPWLEN];
+extern char passwd[9];
+extern char passwd2[9];
 char * vncDecryptPasswd(char *inouttext);
 //
 // Utils
@@ -405,7 +405,7 @@ char* GetDSMPluginName()
 
 void SetDSMPluginName(char* szDSMPlugin)
 {
-	strcpy(m_szDSMPlugin, szDSMPlugin);
+	strcpy_s(m_szDSMPlugin,128, szDSMPlugin);
 	return;
 }
 

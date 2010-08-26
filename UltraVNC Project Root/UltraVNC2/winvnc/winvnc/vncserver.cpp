@@ -1484,6 +1484,7 @@ bool vncServer::LocalInputsDisabled()
     return serverSharedmem->m_disable_local_inputs ? true : false;
 }
 
+
 BOOL vncServer::JapInputEnabled()
 {
 	return m_enable_jap_input;
@@ -2502,6 +2503,8 @@ void vncServer::_actualTimerRetryHandler()
 		}
 	}
 }
+
+/// Do NOt Use CRash...  seems message is sometimes send middle in an update -> data corrupted
 void vncServer::NotifyClients_StateChange(CARD32 state, CARD32 value)
 {
 	critsec l(&CriticalSection1);

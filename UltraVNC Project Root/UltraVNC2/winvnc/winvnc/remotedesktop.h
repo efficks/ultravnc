@@ -21,7 +21,6 @@ extern comm_serv SetBlockInputStateFn;
 extern comm_serv SetSWFn;
 
 extern comm_serv QueueRectFn;
-extern comm_serv SetDisableInputFn;
 extern comm_serv newdesktopFN;
 extern comm_serv deletedesktopFn;
 extern comm_serv UltraEncoder_usedFn;
@@ -74,10 +73,10 @@ public:
 									#endif
 			return value;
 		};
-	bool block_input(bool state)
-	//{return true;};
-		//{char value;value=state;block_inputFn.Call_Fnction((char*)&value,(char*)&value);return value;};
-		{block_inputFn.Call_Fnction_no_feedback();return true;};
+	void block_input()
+		//{return true;};
+		//{block_inputFn.Call_Fnction(NULL,NULL);return;};
+		{block_inputFn.Call_Fnction_no_feedback();return;};
 	bool Init()
 		{char value;InitFn.Call_Fnction_Long(NULL,(char*)&value);return value;};
 	void SethookMechanism(bool value1,bool value2)
@@ -88,13 +87,14 @@ public:
 	void TriggerUpdate()
 		{TriggerUpdateFn.Call_Fnction_no_feedback();};
 	void SetBlockInputState(bool value)
-		{char val;val=value;SetBlockInputStateFn.Call_Fnction((char*)&val,NULL);};
+		{char val;
+			val=value;
+			SetBlockInputStateFn.Call_Fnction((char*)&val,NULL);
+		};
 	void SetSW(int x, int y)
 		{_SetSW sw;sw.x=x;sw.y=y;SetSWFn.Call_Fnction((char*)&sw,NULL);};
 	void QueueRect()
 		{QueueRectFn.Call_Fnction_no_feedback();};
-	void SetDisableInput(bool value)
-		{char val;val=value;SetDisableInputFn.Call_Fnction((char*)&val,NULL);};	
 
 	//fake, need to be removed
 	char * OptimisedBlitBuffer(){return NULL;};

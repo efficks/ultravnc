@@ -85,6 +85,7 @@ ReadProperties::ReadProperties()
 	m_pref_EnableFileTransfer = TRUE;
 	m_pref_FTUserImpersonation = TRUE;
 	m_pref_EnableBlankMonitor = TRUE;
+	m_pref_BlankInputsOnly=FALSE;
 	m_pref_DefaultScale = 1;
 	m_pref_CaptureAlphaBlending = FALSE; 
 	m_pref_BlackAlphaBlending = FALSE; 
@@ -192,6 +193,7 @@ ReadProperties::ApplyUserPrefs()
 	m_server->BlackAlphaBlending(m_pref_BlackAlphaBlending); // sf@2005
 	m_server->Primary(m_pref_Primary);
 	m_server->Secondary(m_pref_Secondary);
+
 
 	m_server->BlankMonitorEnabled(m_pref_EnableBlankMonitor);
 	m_server->BlankInputsOnly(m_pref_BlankInputsOnly); //PGM

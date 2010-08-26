@@ -69,6 +69,7 @@ LONG AllowEditClients=1;
 LONG FileTransferEnabled=0;
 LONG FTUserImpersonation;
 LONG BlankMonitorEnabled=0;
+LONG BlankInputsOnly=0;
 LONG DefaultScale=1;
 LONG CaptureAlphaBlending=1;
 LONG BlackAlphaBlending=1;
@@ -94,8 +95,8 @@ LONG EnableRemoteInputs=1;
 LONG LockSettings=0;
 LONG DisableLocalInputs=0;
 LONG EnableJapInput=0;
-char passwd[MAXPWLEN];
-char passwd2[MAXPWLEN];
+char passwd[9];
+char passwd2[9];
 
 LONG TurboMode=1;
 LONG PollUnderCursor=0;
@@ -127,46 +128,6 @@ char preset3D[128];
 char preset3ID[128];
 
 int vncEncryptPasswd(char *passwd, char *encryptedPasswd);
-
-INT_PTR CALLBACK PasswdProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			char plaintext2[MAXPWLEN+1];
-			int len = GetDlgItemText(hDlg, IDC_SFXPASSWD, (LPSTR) &plaintext2, MAXPWLEN+1);
-			if (len == 0)
-					{
-						strcpy(passwd,"");
-					}
-			else
-					{
-						vncEncryptPasswd(plaintext2,passwd);
-					}
-			char plaintext4[MAXPWLEN+1];
-			int len2 = GetDlgItemText(hDlg, IDC_SFXPASSWD, (LPSTR) &plaintext4, MAXPWLEN+1);
-			if (len2 == 0)
-					{
-						strcpy(passwd2,"");
-					}
-			else
-					{
-						vncEncryptPasswd(plaintext4,passwd2);
-					}
-
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
 
 void Save_settings()
 {
@@ -203,6 +164,7 @@ myIniFile_Out.WriteInt("admin", "AllowEditClients" ,AllowEditClients);
 myIniFile_Out.WriteInt("admin", "FileTransferEnabled", FileTransferEnabled);
 myIniFile_Out.WriteInt("admin", "FTUserImpersonation", FTUserImpersonation);
 myIniFile_Out.WriteInt("admin", "BlankMonitorEnabled", BlankMonitorEnabled);
+myIniFile_Out.WriteInt("admin", "BlankInputsOnly",BlankInputsOnly );
 myIniFile_Out.WriteInt("admin", "DefaultScale", DefaultScale);
 myIniFile_Out.WriteInt("admin", "CaptureAlphaBlending", CaptureAlphaBlending);
 myIniFile_Out.WriteInt("admin", "BlackAlphaBlending", BlackAlphaBlending);
@@ -259,6 +221,8 @@ myIniFile_Out.WriteString("presets", "preset3ID", preset3ID);
 
 void Read_Settings_from_ini()
 {
+memset(passwd,0,MAXPWLEN);
+memset(passwd2,0,MAXPWLEN);
 IniFile myIniFile_In;
 kickrdp=myIniFile_In.ReadInt("admin", "kickrdp", kickrdp);
 myIniFile_In.ReadString("admin", "service_commandline",servicecmdline,256);
@@ -292,6 +256,7 @@ AllowEditClients=myIniFile_In.ReadInt("admin", "AllowEditClients", true);
 FileTransferEnabled=myIniFile_In.ReadInt("admin", "FileTransferEnabled", true);
 FTUserImpersonation=myIniFile_In.ReadInt("admin", "FTUserImpersonation", true);
 BlankMonitorEnabled = myIniFile_In.ReadInt("admin", "BlankMonitorEnabled", true);
+BlankInputsOnly = myIniFile_In.ReadInt("admin", "BlankInputsOnly", false);
 DefaultScale = myIniFile_In.ReadInt("admin", "DefaultScale", 1);
 CaptureAlphaBlending = myIniFile_In.ReadInt("admin", "CaptureAlphaBlending", false); // sf@2005
 BlackAlphaBlending = myIniFile_In.ReadInt("admin", "BlackAlphaBlending", false); // sf@2005
@@ -311,6 +276,21 @@ QueryAccept=myIniFile_In.ReadInt("admin", "QueryAccept", 0);
 QueryIfNoLogon=myIniFile_In.ReadInt("admin", "QueryIfNoLogon", 0);
 myIniFile_In.ReadPassword(passwd,MAXPWLEN);
 myIniFile_In.ReadPassword2(passwd2,MAXPWLEN);
+passwd[8] = 0;
+passwd2[8] = 0;
+if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+{
+	MessageBox(NULL,"Authentication error: You enabled authentication but no password have been set for <full> and <view only>","Error",MB_ICONERROR);
+}
+else if (AuthRequired==1 && strlen(passwd)==0 )
+{
+	MessageBox(NULL,"Authentication error: You enabled authentication but no password have been set for <full>","Error",MB_ICONERROR);
+}
+else if (AuthRequired==1 && strlen(passwd2)==0)
+{
+	MessageBox(NULL,"Authentication error: You enabled authentication but no password have been set for <view only>","Error",MB_ICONERROR);
+}
+
 EnableRemoteInputs=myIniFile_In.ReadInt("admin", "InputsEnabled", 0);
 LockSettings=myIniFile_In.ReadInt("admin", "LockSetting", 0);
 DisableLocalInputs=myIniFile_In.ReadInt("admin", "LocalInputsDisabled", 0);
@@ -372,8 +352,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 			if (scm)
 			{
 				running_as_admin=true;
+				CloseServiceHandle(scm);
 			}
-	CloseServiceHandle(scm);
 
 	IniFile myIniFile_Out;
 	myIniFile_Out.IniFileSetSecure();
@@ -433,6 +413,8 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT uMsg,
 
 	switch (uMsg) {
 	case WM_TIMER:
+		{
+		char text[128];
 		compack bufpack;
 		bufpack.command=0;
 		bufpack.version=100;
@@ -454,13 +436,15 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT uMsg,
 			
 			if (!MTC.write(&bufpack)) server_online=false;
 			if (!MTC.read(&bufpack)) server_online=false;
-			char text[128];
+		}
 			if (server_online) strcpy(text,"vnc running YES - ");
 			if (!server_online) strcpy(text,"vnc running NO - ");
 			if (running_as_admin) strcat(text,"service access YES - ");
 			if (!running_as_admin) strcat(text,"service access NO - ");
-			if (write_permission) strcat(text,"save settings YES");
-			if (!write_permission) strcat(text,"save settings NO ");
+			if (write_permission) strcat(text,"save settings YES - ");
+			if (!write_permission) strcat(text,"save settings NO - ");
+			if (!AuthRequired) strcat(text," Authentication OFF ");
+			if (AuthRequired) strcat(text," Authentication ON ");
 			SetWindowText(hwndDlg,text);
 		}
 		break;
@@ -605,8 +589,10 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT uMsg,
 			if (!server_online) strcpy(text,"vnc running NO - ");
 			if (running_as_admin) strcat(text,"service access YES - ");
 			if (!running_as_admin) strcat(text,"service access NO - ");
-			if (write_permission) strcat(text,"save settings YES");
-			if (!write_permission) strcat(text,"save settings NO ");
+			if (write_permission) strcat(text,"save settings YES - ");
+			if (!write_permission) strcat(text,"save settings NO - ");
+			if (!AuthRequired) strcat(text," Authentication OFF ");
+			if (AuthRequired) strcat(text," Authentication ON ");
 			SetWindowText(hwndDlg,text);
 			return TRUE;
 		}

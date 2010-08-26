@@ -35,7 +35,7 @@ remoteServer::remoteServer(hiddenwindow *IN_hw)
 
 	//desktop	
 	SendCursorShapeFn.Init("SendCursorShape",sizeof(_doublebool),1,app,false);
-	block_inputFn.Init("block_input",sizeof(char),sizeof(char),app,false);	
+	block_inputFn.Init("block_input",0,0,app,false);	
 	InitFn.Init("Init",0,1,app,true);	
 	SethookMechanismFn.Init("SethookMechanism",sizeof(_doublebool),0,app,false);
 	SetClipTextFn.Init("SetClipText",0,0,app,false);
@@ -45,7 +45,6 @@ remoteServer::remoteServer(hiddenwindow *IN_hw)
 	SetSWFn.Init("SetSW",sizeof(_SetSW),0,app,false);
 
 	QueueRectFn.Init("QueueRect",0,0,app,false);
-	SetDisableInputFn.Init("SetDisableInput",sizeof(char),0,app,false);
 	newdesktopFN.Init("newdesktop",0,0,app,false);
 	deletedesktopFn.Init("deletedesktop",0,0,app,false);
 	UltraEncoder_usedFn.Init("UltraEncoder_used",0,1,app,false);
@@ -170,7 +169,7 @@ bool remoteServer::InputDesktopSelected()
 unsigned remoteServer::run()
 {
 			vncDesktop *m_desktop=NULL;
-			HANDLE Events[13];		
+			HANDLE Events[12];		
 			Events[0]=newdesktopFN.GetEvent();
 			Events[1]=deletedesktopFn.GetEvent();
 			Events[2]=InitFn.GetEvent();	
@@ -182,8 +181,7 @@ unsigned remoteServer::run()
 			Events[8]=SetBlockInputStateFn.GetEvent();
 			Events[9]=SetSWFn.GetEvent();
 			Events[10]=QueueRectFn.GetEvent();
-			Events[11]=SetDisableInputFn.GetEvent();
-			Events[12]=UltraEncoder_usedFn.GetEvent();
+			Events[11]=UltraEncoder_usedFn.GetEvent();
 			 //check done input desktop auto selected
 			InputDesktopSelected();
 			if (hw->Viewer_connected())
@@ -198,7 +196,7 @@ unsigned remoteServer::run()
 								}
 			while (ThreadRunning)
 				{ 
-					DWORD dwEvent = WaitForMultipleObjects(13,Events,FALSE,1000);
+					DWORD dwEvent = WaitForMultipleObjects(12,Events,FALSE,1000);
 					#ifdef _DEBUG
 					char			szText[256];
 					sprintf(szText," ++++++ eventnewdesk %i\n",dwEvent-WAIT_OBJECT_0);
@@ -241,9 +239,9 @@ unsigned remoteServer::run()
 								break;
 							case WAIT_OBJECT_0 + 4:
 								{
-									char value;
+									//char value;
 									//block_inputFn.ReadData(&value);
-									if (m_desktop) value=m_desktop->block_input(desktopsharedmem->m_bIsInputDisabledByClient);
+									if (m_desktop) m_desktop->block_input();
 									//block_inputFn.SetData((char*)&value);
 								}
 								break;
@@ -276,7 +274,7 @@ unsigned remoteServer::run()
 
 							case WAIT_OBJECT_0 + 8:
 								{
-									int value;
+									char value;
 									SetBlockInputStateFn.ReadData((char*)&value);
 									if (m_desktop) m_desktop->SetBlockInputState(value);
 									SetBlockInputStateFn.SetData(NULL);
@@ -303,15 +301,6 @@ unsigned remoteServer::run()
 								break;
 			
 							case WAIT_OBJECT_0 + 11:
-									{
-								int value;
-									SetDisableInputFn.ReadData((char*)&value);
-									if (m_desktop) m_desktop->SetDisableInput(value);
-									SetDisableInputFn.SetData(NULL);
-								}
-								break;
-			
-							case WAIT_OBJECT_0 + 12:
 								{
 									int value;
 									UltraEncoder_usedFn.ReadData(NULL);

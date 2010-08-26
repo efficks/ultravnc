@@ -29,6 +29,7 @@ using namespace rfb;
 void dump_rects(char *n, HRGN rgn, bool dbg = 0)
 {
 #if defined(_DEBUG)
+return;
   //vnclog.Print(LL_INTWARN, VNCLOG("Region %s %p contains rects:\n"), n, rgn);
 	DWORD buffsize = GetRegionData(rgn, 0, NULL);
 	if (!buffsize)

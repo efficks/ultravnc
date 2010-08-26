@@ -64,7 +64,6 @@ public:
 	comm_serv SetSWFn;
 
 	comm_serv QueueRectFn;
-	comm_serv SetDisableInputFn;
 	comm_serv newdesktopFN;
 	comm_serv deletedesktopFn;
 	comm_serv UltraEncoder_usedFn;
@@ -159,7 +158,6 @@ public:
 	void Hook(bool value){serverSharedmem->m_hook=value;};
 	void PollFullScreen(bool value){serverSharedmem->m_poll_fullscreen=value;};
 	void BlackAlphaBlending(bool value){serverSharedmem->m_fBlackAlphaBlending=value;};
-	void DisableLocalInputs(bool value){serverSharedmem->m_disable_local_inputs=value;};
 	char *GetWindowName(){return serverSharedmem->m_szWindowName;};
 
 

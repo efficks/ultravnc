@@ -105,9 +105,9 @@ BOOL CALLBACK vncListDlg::DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			_this->m_dlgvisible = TRUE;
 			if (bool_GetAllowEditClients)
 			{
-				EnableWindow(GetDlgItem(hwnd, IDC_KILL_B), false);
+				EnableWindow(GetDlgItem(hwnd, IDC_KILL_B), true);
 			}
-			else EnableWindow(GetDlgItem(hwnd, IDC_KILL_B), true);
+			else EnableWindow(GetDlgItem(hwnd, IDC_KILL_B), false);
 			return TRUE;
 		}
 

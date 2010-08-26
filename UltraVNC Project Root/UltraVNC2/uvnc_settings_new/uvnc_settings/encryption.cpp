@@ -83,7 +83,7 @@ BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 		case IDOK:	
 			{
 				UseDSMPlugin=SendDlgItemMessage(hwnd, IDC_PLUGIN_CHECK, BM_GETCHECK, 0, 0);
-				GetDlgItemText(hwnd, IDC_PLUGINS_COMBO, DSMPlugin, MAX_PATH);
+				GetDlgItemText(hwnd, IDC_PLUGINS_COMBO, DSMPlugin, 128);
 				
 			}
 			break;

@@ -12,11 +12,12 @@ extern LONG AllowProperties;
 extern LONG AllowEditClients;
 extern HINSTANCE hInst;
 #define MAXPWLEN 8
-extern char passwd[MAXPWLEN];
-extern char passwd2[MAXPWLEN];
+extern char passwd[9];
+extern char passwd2[9];
 char *plaintext;
 char *plaintext3;
 vncSetAuth m_vncauth;
+extern HWND m_hParent;
 
 
 unsigned char fixedkey[8] = {23,82,107,6,35,78,88,7};
@@ -401,31 +402,107 @@ vncDecryptPasswd(char *inouttext)
     return (char *)passwd;
 }
 
+bool error_passwd1=false;
+bool error_passwd2=false;
+bool error_auth=true;
+
+
 BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (uMsg)
 	{
+	case WM_CTLCOLORSTATIC:
+		{
+			if((HWND) lParam == GetDlgItem(hwnd, IDC_PASSWORD_LABEL1) && error_passwd1 )
+			{
+			SetBkColor((HDC) wParam, (COLORREF) GetSysColor(COLOR_BTNFACE));
+			SetTextColor((HDC) wParam, RGB(255, 0, 0));
+			SetBkMode((HDC) wParam, TRANSPARENT);
+			return true;
+			}
+			if((HWND) lParam == GetDlgItem(hwnd, IDC_PASSWORD_LABEL2) && error_passwd2 )
+			{
+			SetBkColor((HDC) wParam, (COLORREF) GetSysColor(COLOR_BTNFACE));
+			SetTextColor((HDC) wParam, RGB(255, 0, 0));
+			SetBkMode((HDC) wParam, TRANSPARENT);
+			return true;
+			}
+			if((HWND) lParam == GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX))
+			{
+			SetBkColor((HDC) wParam, (COLORREF) GetSysColor(COLOR_MENU));
+			SetTextColor((HDC) wParam, RGB(255, 0, 0));
+			SetBkMode((HDC) wParam, TRANSPARENT);
+			return false;
+			}
+
+			return false;
+		}
+		break;
+
 	case WM_INITDIALOG: 
 		{	
 			initdone2=false;
-			plaintext=vncDecryptPasswd(passwd);
-			plaintext3=vncDecryptPasswd(passwd2);
 			SendMessage(GetDlgItem(hwnd, IDC_MSLOGON_CHECKD), BM_SETCHECK, MSLogonRequired, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_NEW_MSLOGON), BM_SETCHECK, NewMSLogon, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_PASSRECK), BM_SETCHECK, AuthRequired, 0);
-			//SendMessage(GetDlgItem(hwnd, IDC_ALLOWSHUTDOWN), BM_SETCHECK, AllowShutdown, 0);
+			SendMessage(GetDlgItem(hwnd, IDC_PASSRECK), BM_SETCHECK, !AuthRequired, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_ALLOWEDIT), BM_SETCHECK, AllowEditClients, 0);
-			//SendMessage(GetDlgItem(hwnd, IDC_ALLOWPROP), BM_SETCHECK, AllowProperties, 0);
-			SetDlgItemText(hwnd, IDC_PASSWORD, plaintext);
-			 SetDlgItemText(hwnd, IDC_PASSWORD2, plaintext3);
+			SetDlgItemText(hwnd, IDC_PASSWORD, "~~~~~~~~");
+			SetDlgItemText(hwnd, IDC_PASSWORD2, "~~~~~~~~");
 			BOOL bMSLogonChecked =
 				(SendDlgItemMessage(hwnd, IDC_MSLOGON_CHECKD,
 										BM_GETCHECK, 0, 0) == BST_CHECKED);
 
 			EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), bMSLogonChecked);
 			EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), bMSLogonChecked);
+
+			if (!AuthRequired)
+			{
+			EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON_CHECKD), AuthRequired);
+			EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD), AuthRequired);
+			EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD2), AuthRequired);
+			EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), AuthRequired);
+			EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), AuthRequired);
+			}
+
+			error_passwd1=false;error_passwd2=false;
+			int len = strlen(passwd);
+			if (strcmp(passwd,passwd2) == 0 && len!=0)
+			{
+				error_passwd1=true;error_passwd2=true;
+			}
+			if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+			{
+				error_passwd1=true;error_passwd2=true;
+			}
+			else if (AuthRequired==1 && strlen(passwd)==0 )
+			{
+				error_passwd1=true;
+			}
+			else if (AuthRequired==1 && strlen(passwd2)==0)
+			{
+				error_passwd2=true;
+			}
+			if (strcmp(passwd,passwd2) == 0 && len!=0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"The <view only> and the <full> password are identical. \n You always have <full> access.");
+				}
+				else if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full> and <view only>");
+				}
+				else if (AuthRequired==1 && strlen(passwd)==0 )
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full>");
+				}
+				else if (AuthRequired==1 && strlen(passwd2)==0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <view only>");
+				}
+				else SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"");
+
 			initdone2=true;
+			InvalidateRect(hwnd,NULL,false);
 			return TRUE;
 		}
 
@@ -447,6 +524,104 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 
 			}
 			return TRUE;
+
+			case IDC_PASSRECK:
+				{
+				AuthRequired=!SendDlgItemMessage(hwnd, IDC_PASSRECK, BM_GETCHECK, 0, 0);
+				if (!AuthRequired)
+				{
+				EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON_CHECKD), AuthRequired);
+				EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD), AuthRequired);
+				EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD2), AuthRequired);
+				EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), AuthRequired);
+				EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), AuthRequired);
+				}
+				else
+				{
+					EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON_CHECKD), AuthRequired);
+					EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD), AuthRequired);
+					EnableWindow(GetDlgItem(hwnd, IDC_PASSWORD2), AuthRequired);
+					EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), AuthRequired);
+					EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), AuthRequired);
+					BOOL bMSLogonChecked =
+						(SendDlgItemMessage(hwnd, IDC_MSLOGON_CHECKD,
+										BM_GETCHECK, 0, 0) == BST_CHECKED);
+
+					EnableWindow(GetDlgItem(hwnd, IDC_NEW_MSLOGON), bMSLogonChecked);
+					EnableWindow(GetDlgItem(hwnd, IDC_MSLOGON), bMSLogonChecked);
+				}
+
+				char plaintext2[MAXPWLEN+1];
+				int len=strlen(passwd);
+				GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
+				if (strcmp(plaintext2, "~~~~~~~~") != 0) 
+				{
+				len = GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
+				if (len == 0)
+						{
+							memset(passwd,0,MAXPWLEN);
+						}
+				else
+						{
+							vncEncryptPasswd(plaintext2,passwd);
+						}
+				}
+				char plaintext4[MAXPWLEN+1];
+				int len2=strlen(passwd2);
+				GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
+				if (strcmp(plaintext4, "~~~~~~~~") != 0) 
+				{
+				len2 = GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
+				if (len2 == 0)
+						{
+							memset(passwd2,0,MAXPWLEN);
+						}
+				else
+						{
+							vncEncryptPasswd(plaintext4,passwd2);
+						}
+				}
+
+				error_passwd1=false;error_passwd2=false;
+				if (strcmp(passwd,passwd2) == 0 && len!=0)
+				{
+					error_passwd1=true;error_passwd2=true;
+				}
+				if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+				{
+					error_passwd1=true;error_passwd2=true;
+				}
+				else if (AuthRequired==1 && strlen(passwd)==0 )
+				{
+					error_passwd1=true;
+				}
+				else if (AuthRequired==1 && strlen(passwd2)==0)
+				{
+					error_passwd2=true;
+				}
+
+				if (strcmp(passwd,passwd2) == 0 && len!=0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"The <view only> and the <full> password are identical. \n You always have <full> access.");
+				}
+				else if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full> and <view only>");
+				}
+				else if (AuthRequired==1 && strlen(passwd)==0 )
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full>");
+				}
+				else if (AuthRequired==1 && strlen(passwd2)==0)
+				{
+					SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <view only>");
+				}
+				else SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"");
+
+				InvalidateRect(hwnd,NULL,false);
+				SendMessage(m_hParent,WM_TIMER,0,0);
+				}
+				break;
 			case IDC_MSLOGON:
 			{
 				// Marscha@2004 - authSSP: if "New MS-Logon" is checked,
@@ -484,13 +659,17 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 		case IDOK:
 			MSLogonRequired=SendDlgItemMessage(hwnd, IDC_MSLOGON_CHECKD, BM_GETCHECK, 0, 0);
 			NewMSLogon=SendDlgItemMessage(hwnd, IDC_NEW_MSLOGON, BM_GETCHECK, 0, 0);
-			AuthRequired=SendDlgItemMessage(hwnd, IDC_PASSRECK, BM_GETCHECK, 0, 0);
+			AuthRequired=!SendDlgItemMessage(hwnd, IDC_PASSRECK, BM_GETCHECK, 0, 0);
 			//AllowShutdown=SendDlgItemMessage(hwnd, IDC_ALLOWSHUTDOWN, BM_GETCHECK, 0, 0);
 			AllowEditClients=SendDlgItemMessage(hwnd, IDC_ALLOWEDIT, BM_GETCHECK, 0, 0);
 			//AllowProperties=SendDlgItemMessage(hwnd, IDC_ALLOWPROP, BM_GETCHECK, 0, 0);
 
 			char plaintext2[MAXPWLEN+1];
-			int len = GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
+			int len=strlen(passwd);
+			GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
+			if (strcmp(plaintext2, "~~~~~~~~") != 0) 
+			{
+			len = GetDlgItemText(hwnd, IDC_PASSWORD, (LPSTR) &plaintext2, MAXPWLEN+1);
 			if (len == 0)
 					{
 						memset(passwd,0,MAXPWLEN);
@@ -499,8 +678,13 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 					{
 						vncEncryptPasswd(plaintext2,passwd);
 					}
+			}
 			char plaintext4[MAXPWLEN+1];
-			int len2 = GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
+			int len2=strlen(passwd2);
+			GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
+			if (strcmp(plaintext4, "~~~~~~~~") != 0) 
+			{
+			len2 = GetDlgItemText(hwnd, IDC_PASSWORD2, (LPSTR) &plaintext4, MAXPWLEN+1);
 			if (len2 == 0)
 					{
 						memset(passwd2,0,MAXPWLEN);
@@ -509,6 +693,57 @@ BOOL CALLBACK security(HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 					{
 						vncEncryptPasswd(plaintext4,passwd2);
 					}
+			}
+
+			if (!AuthRequired && (strlen(passwd)!=0 || strlen(passwd2)!=0))
+			{
+				int result=MessageBox(NULL,"Warning: You Disabled authentication, but still have a password set\nUnless you blank the password authentication will still be required\nBLANK PASSWORD ?","Error",MB_YESNO);
+				if (result==IDYES)
+				{
+					memset(passwd,0,8);
+					memset(passwd2,0,8);
+				}
+
+			}
+
+			error_passwd1=false;error_passwd2=false;
+			if (strcmp(passwd,passwd2) == 0 && len!=0)
+			{
+				error_passwd1=true;error_passwd2=true;
+			}
+			if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+			{
+				error_passwd1=true;error_passwd2=true;
+			}
+			else if (AuthRequired==1 && strlen(passwd)==0 )
+			{
+				error_passwd1=true;
+			}
+			else if (AuthRequired==1 && strlen(passwd2)==0)
+			{
+				error_passwd2=true;
+			}
+		
+
+			if (strcmp(passwd,passwd2) == 0 && len!=0)
+			{
+				SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"The <view only> and the <full> password are identical. \n You always have <full> access.");
+			}
+			else if (AuthRequired==1 && strlen(passwd)==0 && strlen(passwd2)==0)
+			{
+				SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full> and <view only>");
+			}
+			else if (AuthRequired==1 && strlen(passwd)==0 )
+			{
+				SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <full>");
+			}
+			else if (AuthRequired==1 && strlen(passwd2)==0)
+			{
+				SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"Authentication error: You enabled authentication but no password have been set for <view only>");
+			}
+			else SetWindowText(GetDlgItem(hwnd, IDC_STATIC_WARNINGBOX),"");
+
+			InvalidateRect(hwnd,NULL,false);
 
 			return TRUE;
 			}

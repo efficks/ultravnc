@@ -49,9 +49,9 @@ HBITMAP
 			hbmBkGnd = (HBITMAP)LoadImage(NULL, mycommand, IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE);
 			if (hbmBkGnd ==NULL)
 			{
-//				 hbmBkGnd = (HBITMAP)LoadImage(
-//                GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LOGO64),
-//                    IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+				 hbmBkGnd = (HBITMAP)LoadImage(
+                GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LOGO64),
+                    IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
 			}
 			BITMAPINFOHEADER h2;
 			h2.biSize=sizeof(h2);

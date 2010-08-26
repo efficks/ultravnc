@@ -142,6 +142,9 @@ DesktopWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 						_this->SetHook(hwnd);
 						vnclog.Print(LL_INTERR, VNCLOG("set SC hooks OK\n"));
 						_this->m_hookinited = TRUE;
+						if (_this->SetKeyboardFilterHook) _this->SetKeyboardFilterHook( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						if (_this->SetMouseFilterHook) _this->SetMouseFilterHook( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						//_this->m_server->NotifyClients_StateChange(rfbServerRemoteInputsState,  !(desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled()));
 					}
 					else if (_this->SetHooks)
 					{
@@ -162,8 +165,9 @@ DesktopWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 							vnclog.Print(LL_INTERR, VNCLOG("set hooks OK\n"));
 							_this->m_hookinited = TRUE;
 							// Start up the keyboard and mouse filters
-							if (_this->SetKeyboardFilterHook) _this->SetKeyboardFilterHook(_this->m_server->LocalInputsDisabled());
-							if (_this->SetMouseFilterHook) _this->SetMouseFilterHook(_this->m_server->LocalInputsDisabled());
+							if (_this->SetKeyboardFilterHooks) _this->SetKeyboardFilterHooks( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+							if (_this->SetMouseFilterHooks) _this->SetMouseFilterHooks( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+							//_this->m_server->NotifyClients_StateChange(rfbServerRemoteInputsState,  !(desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled()));
 						}
 					}
 			}
@@ -182,7 +186,27 @@ DesktopWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				if (_this->m_hookinited==FALSE)
 				SetTimer(hwnd,100,4000,NULL);
 			}
-			else if (_this->m_hookinited)
+		else if (wParam==2)
+		{
+			if (_this->m_hookinited)
+				{						
+					if (_this->SetHook)
+					{
+						if (_this->SetKeyboardFilterHook) _this->SetKeyboardFilterHook( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						if (_this->SetMouseFilterHook) _this->SetMouseFilterHook( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						//_this->m_server->NotifyClients_StateChange(rfbServerRemoteInputsState,  !(desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled()));
+					}
+					else if (_this->SetHooks)
+					{
+
+						if (_this->SetKeyboardFilterHooks) _this->SetKeyboardFilterHooks( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						if (_this->SetMouseFilterHooks) _this->SetMouseFilterHooks( desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled());
+						//_this->m_server->NotifyClients_StateChange(rfbServerRemoteInputsState,  !(desktopsharedmem->m_bIsInputDisabledByClient || _this->m_server->LocalInputsDisabled()));
+					}
+
+				}
+		}
+		else if (_this->m_hookinited)
 			{
 				_this->m_hookinited=FALSE;
 				if (_this->UnSetHook)
@@ -590,14 +614,16 @@ vncDesktop::InitWindow()
 	if (hModule)
 		{
 			UnSetHooks = (UnSetHooksFn) GetProcAddress( hModule, "UnSetHooks" );
-			SetMouseFilterHook  = (SetMouseFilterHookFn) GetProcAddress( hModule, "SetMouseFilterHook" );
-			SetKeyboardFilterHook  = (SetKeyboardFilterHookFn) GetProcAddress( hModule, "SetKeyboardFilterHook" );
+			SetMouseFilterHooks  = (SetMouseFilterHookFn) GetProcAddress( hModule, "SetMouseFilterHook" );
+			SetKeyboardFilterHooks  = (SetKeyboardFilterHookFn) GetProcAddress( hModule, "SetKeyboardFilterHook" );
 			SetHooks  = (SetHooksFn) GetProcAddress( hModule, "SetHooks" );
 		}
 	if (hSCModule)
 		{
 			UnSetHook = (UnSetHookFn) GetProcAddress( hSCModule, "UnSetHook" );
 			SetHook  = (SetHookFn) GetProcAddress( hSCModule, "SetHook" );
+			SetMouseFilterHook  = (SetMouseFilterHookFn) GetProcAddress( hModule, "SetMouseFilterHook" );
+			SetKeyboardFilterHook  = (SetKeyboardFilterHookFn) GetProcAddress( hModule, "SetKeyboardFilterHook" );
 		}
 	///////////////////////////////////////////////
 	vnclog.Print(LL_INTERR, VNCLOG("OOOOOOOOOOOO start dispatch\n"));

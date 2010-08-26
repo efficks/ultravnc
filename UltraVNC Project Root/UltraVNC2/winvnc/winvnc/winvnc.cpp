@@ -378,7 +378,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 int WinVNCAppMain()
 {
 	SetOSVersion();
-	Init_shared_mem_and_events();
+	
 	vnclog.Print(LL_INTINFO, VNCLOG("***** DBG - WinVNCAPPMain\n"));
 #ifdef CRASH_ENABLED
 	LPVOID lpvState = Install(NULL,  "rudi.de.vos@skynet.be", "UltraVnc");
@@ -406,6 +406,8 @@ int WinVNCAppMain()
 			}
 		return 0;
 		}
+
+	Init_shared_mem_and_events();
 
 	if (!vncService::RunningAsService())
 	{

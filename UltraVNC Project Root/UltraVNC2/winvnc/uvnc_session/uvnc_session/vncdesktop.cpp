@@ -401,6 +401,7 @@ vncDesktop::vncDesktop()
 	rgnpump.clear();
 	lock_region_add=false;
 	InitWindowThreadh=NULL;
+	old_Blockinput=2;
 }
 
 vncDesktop::~vncDesktop()
@@ -1892,7 +1893,7 @@ void vncDesktop::SetBlankMonitor(bool enabled)
     {
 	    if (enabled)
 	    {
-		    if ((!m_server->BlackAlphaBlending() || VideoBuffer()) && (OSversion()!=2))
+		    if ((!m_server->BlackAlphaBlending() || VideoBuffer()))// && (OSversion()!=2))
 		    {
 			    SetProcessShutdownParameters(0x100, 0);
 			    SystemParametersInfo(SPI_GETPOWEROFFTIMEOUT, 0, &OldPowerOffTimeout, 0);
@@ -1930,36 +1931,6 @@ void vncDesktop::SetBlankMonitor(bool enabled)
 		    }
 	    }
     }
-}
-
-
-// Modif rdv@2002 Dis/enable input
-void
-vncDesktop::SetDisableInput(bool enabled)
-{
-    CARD32 state = enabled ? rfbServerState_Disabled : rfbServerState_Enabled;
-    vnclog.Print(LL_INTINFO, VNCLOG("SetDisableInput: inputs %s\n"), enabled ? "disbled" : "enabled");
-
-	//BlockInput block everything on non w2k and XP
-	//if hookdll is used, he take care of input blocking
-	if (OSversion()==1 || OSversion()==2) 
-		{
-			// added jeff
-			BOOL blocked;
-			if (pbi) 
-            {
-            blocked = block_input(enabled);
-			if(!enabled) Sleep(1000);
-			blocked = block_input(enabled);
-            }
-
-		}
-	else
-		{
-			m_server->DisableLocalInputs(enabled);
-			On_Off_hookdll=true;
-		}
-    m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
 }
 
 
@@ -2252,35 +2223,51 @@ void vncDesktop::InitHookSettings()
 	SethookMechanism(m_server->Hook(),m_server->Driver());
 }
 
-
 void vncDesktop::SetBlockInputState(bool newstate)
 {
+	CARD32 state;
 	if (m_server->BlankMonitorEnabled())
     {
-		if (!m_server->BlankInputsOnly()) //PGM
-	        SetBlankMonitor(newstate);
-        SetDisableInput(newstate);
-        desktopsharedmem->m_bIsInputDisabledByClient = newstate;
+		if (!m_server->BlankInputsOnly()) SetBlankMonitor(newstate);	        
+		desktopsharedmem->m_bIsInputDisabledByClient = newstate;
+		state=!block_input();
+		
     }
-
- CARD32 state = desktopsharedmem->m_bIsInputDisabledByClient ? rfbServerState_Disabled : rfbServerState_Enabled;
- m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
+ //m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
 }
 
-bool vncDesktop::block_input(bool enabled)
+bool vncDesktop::block_input()
 {
-    bool blocked =  false;
+	int Blockinput_val;
+	BOOL returnvalue;
+	if(desktopsharedmem->m_bIsInputDisabledByClient || m_server->LocalInputsDisabled())
+	{
+		Blockinput_val=true;
+	}
+	else
+	{
+		Blockinput_val=false;
+	}
 
+	if (old_Blockinput!=Blockinput_val)
+	{
+		CARD32 state;
+		state=!Blockinput_val;
+		//m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
+	}
     if (pbi)
     {
-        blocked = (*pbi)(enabled) ? true : false;
-#if 0
-        if (!blocked && enabled)
-            vnclog.Print(LL_INTINFO, VNCLOG("BlockInput failed:  Last error %08X\n"), ::GetLastError());
-#endif
-    }
+        returnvalue = (*pbi)(Blockinput_val);
+		DWORD aa=GetLastError();
+		if (old_Blockinput!=Blockinput_val && aa==5)
+		{
+			PostMessage(m_hwnd, WM_HOOKCHANGE, 2, 0);
+		}
 
-    return blocked;
+    }
+	old_Blockinput=Blockinput_val;
+
+    return Blockinput_val;
 }
 
 

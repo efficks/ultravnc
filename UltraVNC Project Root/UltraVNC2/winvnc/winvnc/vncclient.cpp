@@ -1574,7 +1574,6 @@ vncClientThread::run(void *arg)
 
 	BOOL connected = TRUE;
 	// added jeff
-	BOOL need_to_disable_input = m_server->LocalInputsDisabled();
     bool need_to_clear_keyboard = true;
     bool need_first_keepalive = false;
     bool need_ft_version_msg =  false;
@@ -1601,16 +1600,10 @@ vncClientThread::run(void *arg)
 		    ClearKeyStateFn.Call_Fnction((char*)&b,NULL);
             need_to_clear_keyboard = false;
 	    }
-        //
-        if (need_to_disable_input)
-        {
-            // have to do this here if we're a service so that we're on the correct desktop
-            m_client->m_encodemgr.m_buffer->m_desktop->SetDisableInput(m_server->LocalInputsDisabled());
-            need_to_disable_input = false;
-        }
 
         // reclaim input block after local C+A+D if user currently has it blocked 
-        m_client->m_encodemgr.m_buffer->m_desktop->block_input(m_client->m_encodemgr.m_buffer->m_desktop->GetBlockInputState());
+		// TRigger session to block or unblock input
+        m_client->m_encodemgr.m_buffer->m_desktop->block_input();
 
         if (need_first_keepalive)
         {
@@ -1919,7 +1912,7 @@ vncClientThread::run(void *arg)
 
             // 26 March 2008 jdp 
             // send notification of remote input state to new client
-            m_client->SendServerStateUpdate(rfbServerRemoteInputsState, m_server->GetDesktopPointer()->GetBlockInputState() ? rfbServerState_Disabled : rfbServerState_Enabled);
+            // m_client->SendServerStateUpdate(rfbServerRemoteInputsState, m_server->GetDesktopPointer()->GetBlockInputState() ? rfbServerState_Disabled : rfbServerState_Enabled);
 			break;
 			
 		case rfbFramebufferUpdateRequest:
@@ -2249,8 +2242,6 @@ vncClientThread::run(void *arg)
 			}
 			if (m_client->m_keyboardenabled)
 				{
-					//if (msg.sim.status==1) m_client->m_encodemgr.m_buffer->m_desktop->SetDisableInput(true);
-					//if (msg.sim.status==0) m_client->m_encodemgr.m_buffer->m_desktop->SetDisableInput(false);
 					// added jeff
                 vnclog.Print(LL_INTINFO, VNCLOG("rfbSetServerInput: inputs %s\n"), (msg.sim.status==1) ? "disabled" : "enabled");
 
@@ -2259,14 +2250,14 @@ vncClientThread::run(void *arg)
 				if (!m_server->GetDesktopPointer()->GetBlockInputState() && !m_client->m_bClientHasBlockedInput && msg.sim.status==1) 
 					{ 
 						CARD32 state = rfbServerState_Enabled;
-						m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state); 
+						//m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state); 
 						m_client->m_encodemgr.m_buffer->m_desktop->SetBlockInputState(true); 
 						m_client->m_bClientHasBlockedInput = (true);
 					} 
 				if (m_server->GetDesktopPointer()->GetBlockInputState() && m_client->m_bClientHasBlockedInput && msg.sim.status==0)
 					{
 						CARD32 state = rfbServerState_Disabled; 
-						m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
+						//m_server->NotifyClients_StateChange(rfbServerRemoteInputsState, state);
 						m_client->m_encodemgr.m_buffer->m_desktop->SetBlockInputState(FALSE);
 						m_client->m_bClientHasBlockedInput = (FALSE); 
 					} 
@@ -4024,11 +4015,11 @@ vncClient::SendRectangle(const rfb::Rect &rect)
 	else // Normal case - No DSM - Symetry is not important
 	{
 		UINT bytes = m_encodemgr.EncodeRect(ScaledRect, m_socket);
-		 #ifdef _DEBUG
+		 /*#ifdef _DEBUG
 					char			szText[256];
 					sprintf(szText," ++++++ sendrect %i %i %i %i\n",ScaledRect.tl.x,ScaledRect.tl.y,ScaledRect.br.x,ScaledRect.br.y);
 					OutputDebugString(szText);		
-			#endif
+			#endif*/
 		// if (bytes == 0) return false; // From realvnc337. No! Causes viewer disconnections/
 
 		// Send the encoded data

@@ -44,16 +44,16 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 {	
 	switch (uMsg) {
 	case WM_TIMER:
-			SendMessage(GetDlgItem(hwnd, IDC_CONNECT_SOCK), BM_SETCHECK, SocketConnect, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_CONNECT_HTTP), BM_SETCHECK, HTTPConnect, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), BM_SETCHECK, AllowLoopback, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_PROMPTV), BM_SETCHECK, promptv, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_AUTORECON), BM_SETCHECK, autorecon, 0);
-			SendMessage(GetDlgItem(hwnd, IDC_LOOPBACKONLY), BM_SETCHECK, LoopbackOnly, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_CONNECT_SOCK), BM_SETCHECK, SocketConnect, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_CONNECT_HTTP), BM_SETCHECK, HTTPConnect, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), BM_SETCHECK, AllowLoopback, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_PROMPTV), BM_SETCHECK, promptv, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_AUTORECON), BM_SETCHECK, autorecon, 0);
+			//SendMessage(GetDlgItem(hwnd, IDC_LOOPBACKONLY), BM_SETCHECK, LoopbackOnly, 0);
 			SetDlgItemInt(hwnd, IDC_PORTRFB, PortNumber, FALSE);
 			SetDlgItemInt(hwnd, IDC_PORTHTTP, HttpPortNumber, FALSE);
-			CheckDlgButton(hwnd, IDC_PORTNO_AUTO,(AutoPortSelect) ? BST_CHECKED : BST_UNCHECKED);
-			CheckDlgButton(hwnd, IDC_SPECPORT,(!AutoPortSelect) ? BST_CHECKED : BST_UNCHECKED);
+			//CheckDlgButton(hwnd, IDC_PORTNO_AUTO,(AutoPortSelect) ? BST_CHECKED : BST_UNCHECKED);
+			//CheckDlgButton(hwnd, IDC_SPECPORT,(!AutoPortSelect) ? BST_CHECKED : BST_UNCHECKED);
 			break;
 
 		
@@ -76,6 +76,7 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 			HttpPortNumber=bufpack.int_value;
 			}
 			initdone=false;
+			if (LoopbackOnly) AllowLoopback=true;
 			SendMessage(GetDlgItem(hwnd, IDC_CONNECT_SOCK), BM_SETCHECK, SocketConnect, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_CONNECT_HTTP), BM_SETCHECK, HTTPConnect, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), BM_SETCHECK, AllowLoopback, 0);
@@ -160,9 +161,11 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 			break;
 		case IDC_ALLOWLOOPBACK:
 			AllowLoopback=SendDlgItemMessage(hwnd, IDC_ALLOWLOOPBACK, BM_GETCHECK, 0, 0);
+			if (!AllowLoopback) SendMessage(GetDlgItem(hwnd, IDC_LOOPBACKONLY), BM_SETCHECK, false, 0);
 			break;
 		case IDC_LOOPBACKONLY:
 			LoopbackOnly=SendDlgItemMessage(hwnd, IDC_LOOPBACKONLY, BM_GETCHECK, 0, 0);
+			if (LoopbackOnly) SendMessage(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), BM_SETCHECK, true, 0);
 			break;
 		case IDC_PORTRFB:
 			PortNumber=GetDlgItemInt(hwnd, IDC_PORTRFB, &ok1, TRUE);

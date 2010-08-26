@@ -284,8 +284,6 @@ public:
 	DWORD color[10];
 	// added jeff
 	void SetBlankMonitor(bool enabled);
-	// Modif rdv@2002 Dis/enable input
-	void SetDisableInput(bool enabled);
 	void SetSW(int x,int y);
 	//hook selection
 	BOOL m_hookdriver;
@@ -303,7 +301,7 @@ public:
 	void Checkmonitors();
     // 28 Mar 2008 jdp
     void SetBlockInputState(bool newstate);
-    bool block_input(bool enabled);
+    bool block_input();
 	BOOL InitWindow();
 	HANDLE trigger_events[6];
 	HANDLE restart_event;
@@ -464,6 +462,8 @@ protected:
 	UnSetHookFn  UnSetHook;
 	SetKeyboardFilterHookFn SetKeyboardFilterHook;
 	SetMouseFilterHookFn SetMouseFilterHook;
+	SetKeyboardFilterHookFn SetKeyboardFilterHooks;
+	SetMouseFilterHookFn SetMouseFilterHooks;
 	pBlockInput pbi;
 	HMODULE hUser32;
 	BOOL m_OrigpollingSet;
@@ -475,6 +475,7 @@ protected:
 	void StartInitWindowthread();
 	void ShutdownInitWindowthread();
 	bool can_be_hooked;
+	int old_Blockinput;
 
 	
 BOOL DriverWanted;

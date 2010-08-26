@@ -78,7 +78,6 @@ comm_serv SetBlockInputStateFn;
 comm_serv SetSWFn;
 
 comm_serv QueueRectFn;
-comm_serv SetDisableInputFn;
 comm_serv newdesktopFN;
 comm_serv deletedesktopFn;
 comm_serv UltraEncoder_usedFn;
@@ -132,7 +131,7 @@ void Init_shared_mem_and_events()
 	serverSharedmem=(_shareservermem *)Shared_memory_server.Getsharedmem();
 	CopyRegionsPoint_to_serverFn.Init("CopyRegionsPoint_to_server",0,0,!fRunningFromExternalService,true);
 	SendCursorShapeFn.Init("SendCursorShape",sizeof(_doublebool),1,!fRunningFromExternalService,true);
-	block_inputFn.Init("block_input",sizeof(char),sizeof(char),!fRunningFromExternalService,true);
+	block_inputFn.Init("block_input",0,0,!fRunningFromExternalService,true);
 	InitFn.Init("Init",0,1,!fRunningFromExternalService,true);	
 	SethookMechanismFn.Init("SethookMechanism",sizeof(_doublebool),0,!fRunningFromExternalService,true);
 	SetClipTextFn.Init("SetClipText",0,0,!fRunningFromExternalService,true);
@@ -140,7 +139,6 @@ void Init_shared_mem_and_events()
 	SetBlockInputStateFn.Init("SetBlockInputState",sizeof(char),0,!fRunningFromExternalService,true);
 	SetSWFn.Init("SetSW",sizeof(_SetSW),0,!fRunningFromExternalService,true);
 	QueueRectFn.Init("QueueRect",0,0,!fRunningFromExternalService,true);
-	SetDisableInputFn.Init("SetDisableInput",sizeof(char),0,!fRunningFromExternalService,true);
 	newdesktopFN.Init("newdesktop",0,0,!fRunningFromExternalService,true);
 	deletedesktopFn.Init("deletedesktop",0,0,!fRunningFromExternalService,true);
 	UltraEncoder_usedFn.Init("UltraEncoder_used",0,1,!fRunningFromExternalService,true);
