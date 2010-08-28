@@ -76,6 +76,16 @@ BOOL CALLBACK DlgProcSC(HWND hwnd, UINT uMsg,
 			if (!MTC.write(&bufpack)) server_online=false;
 			}
 			break;
+
+		case IDC_DISRECON:
+			{
+			compack bufpack;
+			bufpack.command=9;
+			bufpack.version=100;
+			if (!MTC.write(&bufpack)) server_online=false;
+			}
+			break;
+
 		}
 		return 0;	
 

@@ -84,7 +84,6 @@
 #define IDC_WARN                        1070
 #define IDC_CHECK1                      1072
 #define IDC_PROMPTV                     1072
-#define IDC_BLANKMONONLY                1072
 #define IDC_BLANKINPUT                  1072
 #define IDC_DISINI                      1073
 #define IDC_ALLOWEDIT                   1075
@@ -138,6 +137,7 @@
 #define IDC_AUTORECON                   1135
 #define IDC_PASSWORD_LABEL1             1136
 #define IDC_STATIC_WARNINGBOX           1137
+#define IDC_DISRECON                    1138
 #define IDD_PARENT                      1200
 #define IDC_CONNECT_SOCK                1201
 #define IDD_OPTION2                     1202
@@ -165,7 +165,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1138
+#define _APS_NEXT_CONTROL_VALUE         1139
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

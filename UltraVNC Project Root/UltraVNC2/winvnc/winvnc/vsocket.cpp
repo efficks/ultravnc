@@ -30,7 +30,7 @@
 // with the simple functionality required for an RFB server.
 
 class VSocket;
-
+extern bool			fShutdownOrdered;
 ////////////////////////////////////////////////////////
 // System includes
 
@@ -63,6 +63,8 @@ class VSocket;
 
 #include "VTypes.h"
 extern unsigned int G_SENDBUFFER;
+bool sendall(SOCKET RemoteSocket,char *buff,unsigned int bufflen,int dummy);
+bool debugblock=false;
 ////////////////////////////////////////////////////////
 // *** Lovely hacks to make Win32 work.  Hurrah!
 
@@ -522,6 +524,15 @@ VBool VSocket::SetRecvTimeout(VCard32 msecs)
 VInt
 VSocket::Send(const char *buff, const VCard bufflen)
 {
+	int a=0;
+	while (debugblock)
+	{
+		//trouble we are sending data insite screen updates, possible corruptio
+		OutputDebugString(("sync error"));
+		Sleep(10);
+		a++;
+		if (a>100) return false;
+	}
 	unsigned int newsize=queuebuffersize+bufflen;
 	char *buff2;
 	buff2=(char*)buff;
@@ -530,14 +541,14 @@ VSocket::Send(const char *buff, const VCard bufflen)
 	if (newsize >G_SENDBUFFER)
 	{
 		    memcpy(queuebuffer+queuebuffersize,buff2,G_SENDBUFFER-queuebuffersize);
-			send(sock,queuebuffer,G_SENDBUFFER,0);
+			sendall(sock,queuebuffer,G_SENDBUFFER,0);
 //			vnclog.Print(LL_SOCKERR, VNCLOG("SEND  %i\n") ,G_SENDBUFFER);
 			buff2+=(G_SENDBUFFER-queuebuffersize);
 			bufflen2-=(G_SENDBUFFER-queuebuffersize);
 			queuebuffersize=0;
 			while (bufflen2 > G_SENDBUFFER)
 			{
-				if (!send(sock,buff2,G_SENDBUFFER,0)) return false;
+				if (!sendall(sock,buff2,G_SENDBUFFER,0)) return false;
 //				vnclog.Print(LL_SOCKERR, VNCLOG("SEND 1 %i\n") ,G_SENDBUFFER);
 				buff2+=G_SENDBUFFER;
 				bufflen2-=G_SENDBUFFER;
@@ -545,7 +556,7 @@ VSocket::Send(const char *buff, const VCard bufflen)
 	}
 	memcpy(queuebuffer+queuebuffersize,buff2,bufflen2);
 	queuebuffersize+=bufflen2;
-	if (!send(sock,queuebuffer,queuebuffersize,0)) 
+	if (!sendall(sock,queuebuffer,queuebuffersize,0)) 
         return false;
 //	vnclog.Print(LL_SOCKERR, VNCLOG("SEND 2 %i\n") ,queuebuffersize);
 	queuebuffersize=0;
@@ -563,14 +574,14 @@ VSocket::SendQueued(const char *buff, const VCard bufflen)
 	if (newsize >G_SENDBUFFER)
 	{
 		    memcpy(queuebuffer+queuebuffersize,buff2,G_SENDBUFFER-queuebuffersize);
-			send(sock,queuebuffer,G_SENDBUFFER,0);
+			if (!sendall(sock,queuebuffer,G_SENDBUFFER,0)) return false;
 		//	vnclog.Print(LL_SOCKERR, VNCLOG("SEND Q  %i\n") ,G_SENDBUFFER);
 			buff2+=(G_SENDBUFFER-queuebuffersize);
 			bufflen2-=(G_SENDBUFFER-queuebuffersize);
 			queuebuffersize=0;
 			while (bufflen2 > G_SENDBUFFER)
 			{
-				if (!send(sock,buff2,G_SENDBUFFER,0)) return false;
+				if (!sendall(sock,buff2,G_SENDBUFFER,0)) return false;
 			//	vnclog.Print(LL_SOCKERR, VNCLOG("SEND Q  %i\n") ,G_SENDBUFFER);
 				buff2+=G_SENDBUFFER;
 				bufflen2-=G_SENDBUFFER;
@@ -586,6 +597,15 @@ VSocket::SendQueued(const char *buff, const VCard bufflen)
 VBool
 VSocket::SendExact(const char *buff, const VCard bufflen, unsigned char msgType)
 {
+	int a=0;
+	while (debugblock)
+	{
+		//trouble we are sending data insite screen updates, possible corruptio
+		OutputDebugString(("sync error"));
+		Sleep(10);
+		a++;
+		if (a>100) return false;
+	}
 	//vnclog.Print(LL_SOCKERR, VNCLOG("SendExactMsg %i\n") ,bufflen);
 	if (m_fUsePlugin && m_pDSMPlugin->IsEnabled())
 	{
@@ -605,6 +625,15 @@ VSocket::SendExact(const char *buff, const VCard bufflen, unsigned char msgType)
 VBool
 VSocket::SendExact(const char *buff, const VCard bufflen)
 {
+	int a=0;
+	while (debugblock)
+	{
+		//trouble we are sending data insite screen updates, possible corruptio
+		OutputDebugString(("sync error"));
+		Sleep(10);
+		a++;
+		if (a>100) return false;
+	}
 //	vnclog.Print(LL_SOCKERR, VNCLOG("SendExact %i\n") ,bufflen);
 	// sf@2002 - DSMPlugin
 	VCard nBufflen = bufflen;
@@ -643,6 +672,7 @@ VSocket::SendExact(const char *buff, const VCard bufflen)
 VBool
 VSocket::SendExactQueue(const char *buff, const VCard bufflen)
 {
+	debugblock=true;
 //	vnclog.Print(LL_SOCKERR, VNCLOG("SendExactQueue %i %i\n") ,bufflen,queuebuffersize);
 //	vnclog.Print(LL_SOCKERR, VNCLOG("socket size %i\n") ,bufflen);
 	// sf@2002 - DSMPlugin
@@ -684,9 +714,10 @@ VSocket::ClearQueue()
 {
 	if (queuebuffersize!=0)
   {
-	send(sock,queuebuffer,queuebuffersize,0);
+	sendall(sock,queuebuffer,queuebuffersize,0);
 	queuebuffersize=0;
   }
+  debugblock=false;
 }
 ////////////////////////////
 
@@ -946,6 +977,40 @@ VSocket::ReadSelect(VCard to)
  	return false;
  }
 #endif
+
+
+bool
+sendall(SOCKET RemoteSocket,char *buff,unsigned int bufflen,int dummy)
+{
+int val =0;
+	unsigned int totsend=0;
+	while (totsend <bufflen)
+	  {
+		struct fd_set write_fds;
+		struct timeval tm;
+		int count;
+		int aa=0;
+		do {
+			FD_ZERO(&write_fds);
+			FD_SET(RemoteSocket, &write_fds);
+			tm.tv_sec = 0;
+			tm.tv_usec = 150;
+			count = select(RemoteSocket+ 1, NULL, &write_fds, NULL, &tm);
+		} while (count == 0&& !fShutdownOrdered);
+		if (fShutdownOrdered) return 0;
+		if (count < 0 || count > 1) return 0;
+		if (FD_ISSET(RemoteSocket, &write_fds)) 
+		{
+			val=send(RemoteSocket, buff+totsend, bufflen-totsend, 0);
+		}
+		if (val==0) 
+			return false;
+		if (val==SOCKET_ERROR) 
+			return false;
+		totsend+=val;
+	  }
+	return 1;
+}
 
 
 

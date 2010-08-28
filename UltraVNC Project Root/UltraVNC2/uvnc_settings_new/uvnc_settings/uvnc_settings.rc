@@ -332,6 +332,7 @@ BEGIN
     PUSHBUTTON      "Connect 1",IDC_B_PRESET1,183,16,50,14
     PUSHBUTTON      "Connect 2",IDC_B_PRESET2,183,62,50,14
     PUSHBUTTON      "Connect 3",IDC_B_PRESET3,183,108,50,14
+    PUSHBUTTON      "Desactivate reconnection",IDC_DISRECON,63,139,106,14
 END
 
 

