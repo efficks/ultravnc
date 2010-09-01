@@ -19,6 +19,9 @@
 // Enjoy.
 
 // Adopted to ms-logon for ultravnc by marscha, 2006.
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 
 #include "dh.h"
 #include <tchar.h>

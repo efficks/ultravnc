@@ -1,3 +1,4 @@
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
 //  Copyright (C) 2002 RealVNC Ltd. All Rights Reserved.
 //  Copyright (C) 1999 AT&T Laboratories Cambridge. All Rights Reserved.
 //
@@ -18,10 +19,9 @@
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
 //  USA.
 //
-// If the source code for the VNC system is not available from the place 
-// whence you received this file, check http://www.uk.research.att.com/vnc or contact
-// the authors on vnc@uk.research.att.com for information on obtaining it.
-
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 
 // rfb.h
 // This includes the rfb spec header, the port numbers,

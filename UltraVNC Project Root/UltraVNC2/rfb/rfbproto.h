@@ -1,5 +1,5 @@
 /*
-//  Copyright (C) 2002 Ultr@VNC Team Members. All Rights Reserved.
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
 //  Copyright (C) 2000-2002 Const Kaplinsky. All Rights Reserved.
  *  Copyright (C) 2002 RealVNC Ltd.  All Rights Reserved.
  *  Copyright (C) 1999 AT&T Laboratories Cambridge.  All Rights Reserved.
@@ -56,6 +56,9 @@
  * bytes so that it can be interspersed with 32-bit pixel data without
  * affecting alignment.
  */
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 
 typedef struct {
     CARD16 x;

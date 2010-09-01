@@ -19,6 +19,9 @@
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
 //  USA.
 //
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 // TightVNC distribution homepage on the Web: http://www.tightvnc.com/
 //
 // If the source code for the VNC system is not available from the place 

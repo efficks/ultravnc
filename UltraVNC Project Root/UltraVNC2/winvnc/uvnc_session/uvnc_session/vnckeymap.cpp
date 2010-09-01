@@ -1,9 +1,6 @@
-//  Copyright (C) 2002 RealVNC Ltd. All Rights Reserved.
-//  Copyright (C) 1999 AT&T Laboratories Cambridge. All Rights Reserved.
-//
-//  This file is part of the VNC system.
-//
-//  The VNC system is free software; you can redistribute it and/or modify
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
+// 
+//  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation; either version 2 of the License, or
 //  (at your option) any later version.
@@ -19,14 +16,11 @@
 //  USA.
 //
 // If the source code for the program is not available from the place from
-// which you received this file, check http://www.realvnc.com/ or contact
-// the authors on info@realvnc.com for information on obtaining it.
+// which you received this file, check 
+// http://www.uvnc.com/
+//
+////////////////////////////////////////////////////////////////////////////
 
-// vncKeymap.cpp
-
-// This code originally just mapped between X keysyms and local Windows
-// virtual keycodes.  Now it actually does the local-end simulation of
-// key presses, to keep this messy code on one place!
 #pragma warning(disable : 4786)
 #include "vncKeymap.h"
 #include "vnctimedmsgbox.h"

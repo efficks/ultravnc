@@ -16,8 +16,8 @@
 //  USA.
 //
 // If the source code for the program is not available from the place from
-// which you received this file, check http://www.realvnc.com/ or contact
-// the authors on info@realvnc.com for information on obtaining it.
+// which you received this file, check 
+// http://www.uvnc.com/
 
 // Log.cpp: implementation of the VNCLog class.
 //

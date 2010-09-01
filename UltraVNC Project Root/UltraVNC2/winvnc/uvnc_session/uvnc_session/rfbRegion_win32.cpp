@@ -1,5 +1,5 @@
-//  Copyright (C) 2002-2003 RealVNC Ltd. All Rights Reserved.
-//
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
+// 
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation; either version 2 of the License, or
@@ -16,10 +16,10 @@
 //  USA.
 //
 // If the source code for the program is not available from the place from
-// which you received this file, check http://www.realvnc.com/ or contact
-// the authors on info@realvnc.com for information on obtaining it.
-
-// Cross-platform Region class based on the X11 region implementation
+// which you received this file, check 
+// http://www.uvnc.com/
+//
+////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "rfbRegion_win32.h"

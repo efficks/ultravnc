@@ -162,6 +162,10 @@ code with your application, then you are only allowed to distribute versions rel
 to maintain a single distribution point for the source code. 
 */
 
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
+
 
 /////////////////////////////////  Includes  //////////////////////////////////
 #include <windows.h> 

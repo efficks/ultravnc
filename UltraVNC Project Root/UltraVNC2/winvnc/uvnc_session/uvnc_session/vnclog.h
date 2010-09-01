@@ -1,6 +1,5 @@
-//  Copyright (C) 2002 RealVNC Ltd. All Rights Reserved.
-//  Copyright (C) 1999 AT&T Laboratories Cambridge. All Rights Reserved.
-//
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
+// 
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation; either version 2 of the License, or
@@ -17,15 +16,10 @@
 //  USA.
 //
 // If the source code for the program is not available from the place from
-// which you received this file, check http://www.realvnc.com/ or contact
-// the authors on info@realvnc.com for information on obtaining it.
-
-// This is an object and macros which provide general logging and debugging functions.
-// It can log to a file, to a new console, and/or to debug - others maybe to follow.
-// Every log object has a logging level (which can be changed).
-// Only log requests with a high enough level attached get logged. So the
-// level can be thought of as 'amount of detail'.
-// We use Unicode-portable stuff here for compatibility with WinCE.
+// which you received this file, check 
+// http://www.uvnc.com/
+//
+////////////////////////////////////////////////////////////////////////////
 //
 // Typical use:
 //

@@ -1,3 +1,6 @@
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 /*
 Module : DTWINVER.H
 Purpose: Interface of a function to perform

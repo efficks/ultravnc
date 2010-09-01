@@ -774,6 +774,9 @@
     <ProjectReference Include="..\omnithread\omnithread.vcxproj">
       <Project>{e52b9956-fe67-47f7-bc4f-67cc5a64b708}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\schook_private\SCHook.vcxproj">
+      <Project>{615bbc95-8125-4ffd-b6d5-c7d851d72529}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\uvnc_session\uvnc_session\uvnc_session.vcxproj">
       <Project>{1807f9c3-8f7d-4083-9ffc-374ea0286e0b}</Project>
     </ProjectReference>

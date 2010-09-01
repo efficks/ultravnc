@@ -10,6 +10,9 @@
  * I know this code isn't nice to read because of all the macros, but
  * efficiency is important here.
  */
+// If the source code for the program is not available from the place from
+// which you received this file, check 
+// http://www.uvnc.com/
 
 #if !defined(OUTVNC)
 #error "This file shouldn't be compiled."

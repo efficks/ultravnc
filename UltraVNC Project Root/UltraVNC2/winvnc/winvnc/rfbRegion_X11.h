@@ -1,3 +1,4 @@
+//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
 //  Copyright (C) 2002-2003 RealVNC Ltd. All Rights Reserved.
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -16,8 +17,8 @@
 //  USA.
 //
 // If the source code for the program is not available from the place from
-// which you received this file, check http://www.realvnc.com/ or contact
-// the authors on info@realvnc.com for information on obtaining it.
+// which you received this file, check 
+// http://www.uvnc.com/
 
 // Cross-platform Region class based on the X11 region implementation
 
