@@ -72,7 +72,7 @@ Myinit(HINSTANCE hInstance)
     //Load all messages from ressource file
     Load_Localization(hInstance) ;
 	vnclog.SetFile();
-	vnclog.SetMode(1);
+	vnclog.SetMode(2);
 	vnclog.SetLevel(10);
 
 	// Save the application instance and main thread id

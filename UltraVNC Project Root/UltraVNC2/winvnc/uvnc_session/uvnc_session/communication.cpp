@@ -379,12 +379,6 @@ HANDLE comm_serv::InitFileHandle(char *name,int IN_datasize_IN,int IN_datasize_O
 void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 {
 	if (!GLOBAL_RUNNING) return;
-#ifdef _DEBUG
-		char			szText[256];
-					sprintf(szText," ++++++ call %s\n",filemapping_IN);
-					SetLastError(0);
-					OutputDebugString(szText);		
-			#endif
 	EnterCriticalSection(&CriticalSection_IN);
 	memcpy(data_IN,databuffer_IN,datasize_IN);
 	ResetEvent(event_E_IN_DONE);
@@ -392,19 +386,22 @@ void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 	ResetEvent(event_E_OUT_DONE);
 	SetEvent(event_E_IN);
 	DWORD r=WaitForSingleObject(event_E_IN_DONE,2000);
+
 	if (r==WAIT_TIMEOUT) 
 	{
+		vnclog.Print(LL_INTWARN, "++++++ Call_Fnction timout 1 %s %i \n",filemapping_IN,timeout_counter);
 #ifdef _DEBUG
 		char			szText[256];
-					sprintf(szText," ++++++ timout 1 %s %i \n",filemapping_IN,timeout_counter);
+					sprintf(szText," ++++++ Call_Fnction timout 1 %s %i \n",filemapping_IN,timeout_counter);
 					SetLastError(0);
 					OutputDebugString(szText);		
-			#endif
+#endif
 		r=1;
 		timeout_counter++;
 	}
 	else
 	{
+		vnclog.Print(LL_INTWARN, "++++++ Call_Fnction OK 1 %s \n",filemapping_IN);
 		timeout_counter=0;
 	}
 
@@ -416,14 +413,16 @@ void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 	r=WaitForSingleObject(event_E_OUT,2000);
 	if (r==WAIT_TIMEOUT) 
 	{
+		vnclog.Print(LL_INTWARN, "++++++ Call_Fnction timout 2 %s \n",filemapping_IN);
 #ifdef _DEBUG
 		char			szText[256];
-					sprintf(szText," ++++++ timeout 2 %s\n",filemapping_IN);
+					sprintf(szText," ++++++ Call_Fnction timeout 2 %s\n",filemapping_IN);
 					SetLastError(0);
 					OutputDebugString(szText);		
-			#endif
+#endif
 		r=1;
 	}
+	else vnclog.Print(LL_INTWARN, "++++++ Call_Fnction ok 2 %s \n",filemapping_IN);
 
 	memcpy(databuffer_OUT,data_OUT,datasize_OUT);
 	error:
@@ -518,7 +517,11 @@ void comm_serv::SetData(char *databuffer)
 	SetEvent(event_E_OUT);
 	DWORD r=WaitForSingleObject(event_E_OUT_DONE,1000);
 	if (r==WAIT_TIMEOUT) 
+	{
+		vnclog.Print(LL_INTWARN, "++++++ SetData timeout  %s \n",filemapping_IN);
 		r=1;
+	}
+	else vnclog.Print(LL_INTWARN, "++++++ SetData ok  %s \n",filemapping_IN);
 }
 
 void comm_serv::Force_unblock()

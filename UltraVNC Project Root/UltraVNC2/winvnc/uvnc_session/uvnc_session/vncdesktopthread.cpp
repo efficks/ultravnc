@@ -440,9 +440,16 @@ vncDesktopThread::PollWindow(rfb::Region2D &rgn, HWND hwnd)
 	}
 }
 
-
+bool first_run=true;
 bool vncDesktopThread::handle_display_change(HANDLE& threadHandle, rfb::Region2D& rgncache, rfb::SimpleUpdateTracker& clipped_updates, rfb::ClippedUpdateTracker& updates)
 {
+	BOOL screensize_changed=false;
+	if (first_run)
+	{
+		first_run=false;
+		m_desktop->m_displaychanged=true;
+		screensize_changed=true;
+	}
 	if ((m_desktop->m_displaychanged ||									//WM_DISPLAYCHANGE
 			!InputDesktopSelected2() ||							//handle logon and screensaver desktops
 			m_desktop->m_SWtoDesktop ||										//switch from SW to full desktop or visa versa
@@ -466,7 +473,7 @@ bool vncDesktopThread::handle_display_change(HANDLE& threadHandle, rfb::Region2D
 				if (!InputDesktopSelected2())						vnclog.Print(LL_INTERR, VNCLOG("++++InputDesktopSelected \n"));
 				
 				
-				BOOL screensize_changed=false;
+				
 				BOOL monitor_changed=false;
 				rfbServerInitMsg oldscrinfo;
 				//*******************************************************
@@ -827,7 +834,6 @@ vncDesktopThread::run_undetached(void *arg)
 	// is triggered, and the changed areas are passed to the UpdateTracker
 	rgncache = m_desktop->m_Cliprect;
 	m_server->SetScreenOffset(m_desktop->m_ScreenOffsetx,m_desktop->m_ScreenOffsety,m_desktop->nr_monitors);
-
 	// The previous cursor position is stored, to allow us to erase the
 	// old instance whenever it moves.
 	rfb::Point oldcursorpos;

@@ -621,14 +621,18 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						{
 						char value;
 						UpdatePaletteFn.ReadData((char*) &value);
-						UpdatePaletteFn.ReadData(NULL);
+						bool waarde=value;
+						server->UpdatePalette(waarde);
+						UpdatePaletteFn.SetData(NULL);
 						}
 						break;
 					case WAIT_OBJECT_0 + 16: 
 						{
 						char value;
 						UpdateLocalFormatFn.ReadData((char*) &value);
-						UpdateLocalFormatFn.ReadData(NULL);
+						bool waarde=value;
+						server->UpdateLocalFormat(waarde);
+						UpdateLocalFormatFn.SetData(NULL);
 						}
 						break;
 					case WAIT_OBJECT_0 + 17: 
@@ -664,7 +668,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						typedef VOID (WINAPI *SendSas)(BOOL asUser);
 						HINSTANCE Inst = LoadLibrary("sas.dll");
 						SendSas sendSas = (SendSas) GetProcAddress(Inst, "SendSAS");
-						sendSas(FALSE);
+						if (sendSas) sendSas(FALSE);
 						FreeLibrary(Inst);
 						}
 						break;

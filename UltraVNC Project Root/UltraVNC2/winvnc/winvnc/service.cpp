@@ -458,6 +458,38 @@ Find_winlogon(DWORD SessionId)
   return Id;
 }
 
+DWORD Get_acctive_session_ID()
+{
+	WTS_SESSION_INFO *pSessions = 0;
+    DWORD   nSessions(0);
+	DWORD ID_session=0;
+
+    typedef BOOL (WINAPI *pfnWTSEnumerateSessions)(HANDLE,DWORD,DWORD,PWTS_SESSION_INFO*,DWORD*);
+    typedef VOID (WINAPI *pfnWTSFreeMemory)(PVOID);
+
+    helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
+    helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
+
+    if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
+
+
+    if ((*pWTSEnumerateSessions)(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pSessions, &nSessions)) 
+    {
+        for (DWORD i(0); i < nSessions; ++i)
+        {
+            if ((_stricmp(pSessions[i].pWinStationName, "Console") != 0) && pSessions[i].State == WTSActive ) 
+				{
+					ID_session = pSessions[i].SessionId;
+					break;
+				}
+        }
+
+        (*pWTSFreeMemory)(pSessions);
+    }
+
+	if (lpfnWTSGetActiveConsoleSessionId.isValid() && ID_session==0) ID_session=(*lpfnWTSGetActiveConsoleSessionId)();
+	return ID_session;
+}
 //////////////////////////////////////////////////////////////////////////////
 BOOL
 get_winlogon_handle(OUT LPHANDLE  lphUserToken)
@@ -467,7 +499,9 @@ get_winlogon_handle(OUT LPHANDLE  lphUserToken)
 	HANDLE hAccessToken = NULL;
 	HANDLE hTokenThis = NULL;
 	DWORD ID_session=0;
-	if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID_session=(*lpfnWTSGetActiveConsoleSessionId)();
+	ID_session=Get_acctive_session_ID();
+
+	
 	DWORD Id=0;
 	if (W2K==0) Id=Find_winlogon(ID_session);
 	else Id=GetwinlogonPid();
@@ -532,8 +566,6 @@ GetSessionUserTokenWin(OUT LPHANDLE  lphUserToken)
 {
   BOOL   bResult = FALSE;
   HANDLE hImpersonationToken = INVALID_HANDLE_VALUE;
-  DWORD ID=0;
-  if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
   HANDLE hTokenThis = NULL;
   
   if (lphUserToken != NULL) {   
@@ -548,7 +580,7 @@ GetSessionUserTokenDefault(OUT LPHANDLE  lphUserToken)
   BOOL   bResult = FALSE;
   HANDLE hImpersonationToken = INVALID_HANDLE_VALUE;
   DWORD ID=0;
-  if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
+  ID=Get_acctive_session_ID();
 
   HANDLE hTokenThis = NULL;
   
@@ -639,9 +671,7 @@ LaunchProcessWin(DWORD dwSessionId)
 								   }
 								if (WinStationConnectF!=NULL && LockWorkStationF!=NULL)
 									{
-											DWORD ID=0;
-											if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
-											WinStationConnectF(0, 0, ID, L"", 0);
+											WinStationConnectF(0, 0, dwSessionId, L"", 0);
 											LockWorkStationF();
 									}
 								Sleep(3000);
@@ -715,9 +745,7 @@ LaunchProcessWin(DWORD dwSessionId)
 								   }
 								if (WinStationConnectF!=NULL && WinStationConnectF!=NULL)
 									{
-											DWORD ID=0;
-											if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
-											WinStationConnectF(0, 0, ID, L"", 0);
+											WinStationConnectF(0, 0, dwSessionId, L"", 0);
 											LockWorkStationF();
 									}
 								Sleep(3000);
@@ -773,7 +801,7 @@ void monitor_sessions()
 				break;
 			}
 
-		if (lpfnWTSGetActiveConsoleSessionId.isValid())  dwSessionId = (*lpfnWTSGetActiveConsoleSessionId)();
+		dwSessionId = Get_acctive_session_ID();
 
 		if (OlddwSessionId!=dwSessionId)
 		{
@@ -927,7 +955,7 @@ void disconnect_remote_sessions()
 	if (WinStationConnectF!=NULL && LockWorkStationF!=NULL)
 		{
 				DWORD ID=0;
-				if (lpfnWTSGetActiveConsoleSessionId.isValid()) ID=(*lpfnWTSGetActiveConsoleSessionId)();
+				ID=Get_acctive_session_ID();
 				WinStationConnectF(0, 0, ID, L"", 0);
 				// sleep to allow the system to finish the connect/disconnect process. If we don't
 				// then the workstation won't get locked every time.

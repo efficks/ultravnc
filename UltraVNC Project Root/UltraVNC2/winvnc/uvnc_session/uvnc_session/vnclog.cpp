@@ -102,7 +102,7 @@ void VNCLog::SetFile()
 	SetPath(temp);
 	strcpy(m_filename,m_path);
 	strcat(m_filename,"\\");
-	strcat(m_filename,"WinVNC.log");
+	strcat(m_filename,"uvnc_session.log");
 	m_append = true;
 	if (m_tofile)
 		OpenFile();
