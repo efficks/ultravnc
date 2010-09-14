@@ -608,6 +608,7 @@ vncEncodeMgr::GetNumCodedRects(const rfb::Rect &rect)
 		return m_encoder->NumCodedRects(TRect);
 	}
 
+	if (!m_encoder) return 0;
 	return m_encoder->NumCodedRects(rect);
 }
 
