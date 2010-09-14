@@ -188,7 +188,8 @@ ReadProperties::ApplyUserPrefs()
 
 
 	m_server->EnableFileTransfer(m_pref_EnableFileTransfer);
-	m_server->FTUserImpersonation(m_pref_FTUserImpersonation); // sf@2005
+	//V2 not possible, FT run in service, no impersonation possible
+	//m_server->FTUserImpersonation(m_pref_FTUserImpersonation); // sf@2005
 	m_server->CaptureAlphaBlending(m_pref_CaptureAlphaBlending); // sf@2005
 	m_server->BlackAlphaBlending(m_pref_BlackAlphaBlending); // sf@2005
 	m_server->Primary(m_pref_Primary);
