@@ -118,7 +118,7 @@ unsigned keymouse::run()
 					case WAIT_OBJECT_0 + 0: 
 						{
 						mouseventdata med;
-						mouse_eventFn.ReadData((char*)&med);
+						mouse_eventFn.ReadData((char*)&med);						
 						mouse_event(med.dwFlags,med.dx,med.dy,med.dwData,0);
 						mouse_eventFn.SetData(NULL);
 						}

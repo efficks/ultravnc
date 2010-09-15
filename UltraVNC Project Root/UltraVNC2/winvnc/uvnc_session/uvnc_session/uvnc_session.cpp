@@ -50,8 +50,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	SetProcessDPIAwareFunc setDPIAware = (SetProcessDPIAwareFunc)GetProcAddress(hUser32, "SetProcessDPIAware");
 	if (setDPIAware) setDPIAware();
 	FreeLibrary(hUser32);
-	vnclog.SetFile();
-	vnclog.SetMode(2);
+	//vnclog.SetFile();
+	vnclog.SetMode(1);
 	vnclog.SetLevel(10);
 	app=true;
 	hInst=hInstance;		

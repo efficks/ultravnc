@@ -1593,7 +1593,8 @@ vncDesktop::GetRichCursorData(BYTE *databuf, HCURSOR hcursor, int width, int hei
 										sprintf(szText," SendCursorShapeFn lock 1 \n");
 										OutputDebugString(szText);		
 									#endif
-	omni_mutex_lock l(m_update_lock);
+	//cause several 2 seconds timeouts.... let try without.
+	//omni_mutex_lock l(m_update_lock);
 				#ifdef _DEBUG
 										//char			szText[256];
 										sprintf(szText," SendCursorShapeFn lock2 \n");

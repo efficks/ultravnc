@@ -100,7 +100,7 @@ public:
 	void UpdateCursorShape(){UpdateCursorShapeFn.Call_Fnction(NULL,NULL);};	
 	void Clear_Update_Tracker(){Clear_Update_TrackerFn.Call_Fnction(NULL,NULL);};	
 	void KillAuthClients(){KillAuthClientsFn.Call_Fnction(NULL,NULL);};	
-	void UpdateMouse(){POINT point;GetCursorPos(&point);UpdateMouseFn.Call_Fnction((char*)&point,NULL);};	
+	void UpdateMouse(){POINT point;GetCursorPos(&point);UpdateMouseFn.Call_Fnction_no_feedback_data((char*)&point,NULL);};	
 
 	void SetScreenOffset(int x,int y,int monitor){ _SetScreenOffset so;so.x=x;so.y=y;so.mon=monitor;SetScreenOffsetFn.Call_Fnction((char*)&so,NULL);};	
 	void SetSWOffset(int x,int y){ _SetSWOffset so;so.x=x;so.y=y;SetSWOffsetFn.Call_Fnction((char*)&so,NULL);};

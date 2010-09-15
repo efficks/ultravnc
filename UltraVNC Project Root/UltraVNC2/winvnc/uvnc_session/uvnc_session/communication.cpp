@@ -237,8 +237,10 @@ bool comm_serv::Init(char *name,int IN_datasize_IN,int IN_datasize_OUT,bool app,
 			}
 			event_E_IN=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_IN);
 			if(event_E_IN==NULL) return false;
+			ResetEvent(event_E_IN);
 			event_E_IN_DONE=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_IN_DONE);
 			if(event_IN_DONE==NULL) return false;
+			ResetEvent(event_IN_DONE);
 			if (datasize_OUT!=0)
 			{
 			hMapFile_OUT = OpenFileMapping(FILE_MAP_ALL_ACCESS,FALSE,filemapping_OUT);
@@ -248,8 +250,10 @@ bool comm_serv::Init(char *name,int IN_datasize_IN,int IN_datasize_OUT,bool app,
 			}
 			event_E_OUT=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_OUT);
 			if(event_E_OUT==NULL) return false;
+			ResetEvent(event_E_OUT);
 			event_E_OUT_DONE=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_OUT_DONE);
 			if(event_OUT_DONE==NULL) return false;
+			ResetEvent(event_OUT_DONE);
 		}
 		else
 		{
@@ -262,8 +266,10 @@ bool comm_serv::Init(char *name,int IN_datasize_IN,int IN_datasize_OUT,bool app,
 			}
 			event_E_IN=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_IN);
 			if(event_E_IN==NULL) return false;
+			ResetEvent(event_E_IN);
 			event_E_IN_DONE=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_IN_DONE);
 			if(event_IN_DONE==NULL) return false;
+			ResetEvent(event_IN_DONE);
 
 			if (datasize_OUT!=0)
 			{
@@ -274,8 +280,10 @@ bool comm_serv::Init(char *name,int IN_datasize_IN,int IN_datasize_OUT,bool app,
 			}
 			event_E_OUT=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_OUT);
 			if(event_E_OUT==NULL) return false;
+			ResetEvent(event_E_OUT);
 			event_E_OUT_DONE=OpenEvent(EVENT_ALL_ACCESS, FALSE, event_OUT_DONE);
 			if(event_OUT_DONE==NULL) return false;
+			ResetEvent(event_OUT_DONE);
 		}
 	}
 	return true;
@@ -378,14 +386,20 @@ HANDLE comm_serv::InitFileHandle(char *name,int IN_datasize_IN,int IN_datasize_O
 //service call session function
 void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 {
+#ifdef _DEBUG
+		char			szText[256];
+					sprintf(szText," ++++++ Call_Fnction %s  \n",filemapping_IN);
+					SetLastError(0);
+					OutputDebugString(szText);		
+#endif
 	if (!GLOBAL_RUNNING) return;
 	EnterCriticalSection(&CriticalSection_IN);
 	memcpy(data_IN,databuffer_IN,datasize_IN);
-	ResetEvent(event_E_IN_DONE);
+	//ResetEvent(event_E_IN_DONE);
 	ResetEvent(event_E_OUT);
 	ResetEvent(event_E_OUT_DONE);
 	SetEvent(event_E_IN);
-	DWORD r=WaitForSingleObject(event_E_IN_DONE,2000);
+	DWORD r=WaitForSingleObject(event_E_IN_DONE,1000);
 
 	if (r==WAIT_TIMEOUT) 
 	{
@@ -410,10 +424,10 @@ void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 		GLOBAL_RUNNING=false;
 	}
 	if (!GLOBAL_RUNNING) goto error;
-	r=WaitForSingleObject(event_E_OUT,2000);
+	r=WaitForSingleObject(event_E_OUT,1000);
 	if (r==WAIT_TIMEOUT) 
 	{
-		vnclog.Print(LL_INTWARN, "++++++ Call_Fnction timout 2 %s \n",filemapping_IN);
+		vnclog.Print(LL_INTWARN, "a++++++ Call_Fnction timout 2 %s \n",filemapping_IN);
 #ifdef _DEBUG
 		char			szText[256];
 					sprintf(szText," ++++++ Call_Fnction timeout 2 %s\n",filemapping_IN);
@@ -427,6 +441,12 @@ void comm_serv::Call_Fnction(char *databuffer_IN,char *databuffer_OUT)
 	memcpy(databuffer_OUT,data_OUT,datasize_OUT);
 	error:
 	SetEvent(event_E_OUT_DONE);
+#ifdef _DEBUG
+//		char			szText[256];
+					sprintf(szText," ++++++ event_E_OUT_DONE %s\n",filemapping_IN);
+					SetLastError(0);
+					OutputDebugString(szText);		
+#endif
 	LeaveCriticalSection(&CriticalSection_IN);
 }
 
@@ -439,6 +459,20 @@ void comm_serv::Call_Fnction_no_feedback()
 					OutputDebugString(szText);		
 #endif
 	SetEvent(event_E_IN);
+}
+
+void comm_serv::Call_Fnction_no_feedback_data(char *databuffer_IN,char *databuffer_OUT)
+{
+#ifdef _DEBUG
+		char			szText[256];
+					sprintf(szText," ++++++ Call_Fnction_no_feedback_data %s\n",filemapping_IN);
+					SetLastError(0);
+					OutputDebugString(szText);		
+#endif
+	EnterCriticalSection(&CriticalSection_IN);
+	memcpy(data_IN,databuffer_IN,datasize_IN);
+	SetEvent(event_E_IN);
+	LeaveCriticalSection(&CriticalSection_IN);
 }
 
 //service call session function
@@ -515,7 +549,7 @@ void comm_serv::SetData(char *databuffer)
 	if (!GLOBAL_RUNNING) return;
 	memcpy(data_OUT,databuffer,datasize_OUT);
 	SetEvent(event_E_OUT);
-	DWORD r=WaitForSingleObject(event_E_OUT_DONE,1000);
+	DWORD r=WaitForSingleObject(event_E_OUT_DONE,5);
 	if (r==WAIT_TIMEOUT) 
 	{
 		vnclog.Print(LL_INTWARN, "++++++ SetData timeout  %s \n",filemapping_IN);
