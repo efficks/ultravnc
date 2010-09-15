@@ -71,9 +71,9 @@ Myinit(HINSTANCE hInstance)
 	setbuf(stderr, 0);
     //Load all messages from ressource file
     Load_Localization(hInstance) ;
-	vnclog.SetFile();
-	vnclog.SetMode(2);
-	vnclog.SetLevel(10);
+	//vnclog.SetFile();
+	//vnclog.SetMode(2);
+	//vnclog.SetLevel(10);
 
 	// Save the application instance and main thread id
 	mainthreadId = GetCurrentThreadId();
@@ -494,6 +494,11 @@ int WinVNCAppMain()
 		DWORD dwTId9;
 		threadHandle9 = CreateThread(NULL, 0, tcp_controle_thread, &server, 0, &dwTId9);
 		CloseHandle(threadHandle9);
+
+		HANDLE threadHandle10;
+		DWORD dwTId10;
+		threadHandle10 = CreateThread(NULL, 0, imp_desktop_thread8, &server, 0, &dwTId10);
+		CloseHandle(threadHandle10);
 
 		if (threadHandle)  
 		{
