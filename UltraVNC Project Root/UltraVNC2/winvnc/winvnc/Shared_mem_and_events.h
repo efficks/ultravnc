@@ -39,6 +39,7 @@ extern char* g_szRepeaterHost;
 void Init_shared_mem_and_events();
 DWORD WINAPI tcp_controle_thread(LPVOID lpParam);
 DWORD WINAPI settings_change_monitor(LPVOID lpParam);
+DWORD WINAPI imp_desktop_thread8(LPVOID lpParam);
 DWORD WINAPI imp_desktop_thread7(LPVOID lpParam);
 DWORD WINAPI imp_desktop_thread6(LPVOID lpParam);
 DWORD WINAPI imp_desktop_thread5(LPVOID lpParam);

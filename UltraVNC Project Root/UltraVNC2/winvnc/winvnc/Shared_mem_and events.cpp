@@ -361,33 +361,8 @@ DWORD WINAPI imp_desktop_thread6(LPVOID lpParam)
 					case WAIT_OBJECT_0 + 0: 
 						{
 						POINT point;
-	#ifdef _DEBUG
-					char			szText[256];
-					sprintf(szText," ++++++ UpdateMouseFn 1\n");
-					SetLastError(0);
-					OutputDebugString(szText);		
-			#endif
 						UpdateMouseFn.ReadData((char*)&point);
-	#ifdef _DEBUG
-				//	char			szText[256];
-					sprintf(szText," ++++++ UpdateMouseFn 2\n");
-					SetLastError(0);
-					OutputDebugString(szText);		
-			#endif
 						server->UpdateMouse(&point);
-	#ifdef _DEBUG
-		//			char			szText[256];
-					sprintf(szText," ++++++ UpdateMouseFn 3\n");
-					SetLastError(0);
-					OutputDebugString(szText);		
-			#endif
-						UpdateMouseFn.SetData(NULL);
-	#ifdef _DEBUG
-			//		char			szText[256];
-					sprintf(szText," ++++++ UpdateMouseFn 4\n");
-					SetLastError(0);
-					OutputDebugString(szText);		
-			#endif
 						}
 						break;
 		}
@@ -411,6 +386,29 @@ DWORD WINAPI imp_desktop_thread7(LPVOID lpParam)
 						AuthClientCount.ReadData(NULL);
 						result=server->AuthClientCount();
 						AuthClientCount.SetData((char *)&result);
+						}
+						break;
+		}
+	}
+	return 0;
+}
+
+DWORD WINAPI imp_desktop_thread8(LPVOID lpParam)
+{
+	vncServer *server = (vncServer *)lpParam;
+	HANDLE event0[1];
+	event0[0]=IsThereFileTransBusyFn.GetEvent();
+	while (!fShutdownOrdered)
+	{
+		DWORD dwEvent=WaitForMultipleObjects(1,event0,false,1000);
+		switch(dwEvent)
+				{
+					case WAIT_OBJECT_0: 
+						{
+						char result;
+						IsThereFileTransBusyFn.ReadData(NULL);
+						result=server->IsThereFileTransBusy();
+						IsThereFileTransBusyFn.SetData(&result);
 						}
 						break;
 		}
@@ -457,7 +455,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 	}
 
 
-	HANDLE event0[22];
+	HANDLE event0[21];
 
 	event0[0]=SockConnected.GetEvent();
 	event0[1]=KillAuthClients.GetEvent();
@@ -468,24 +466,23 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 	event0[6]=Get_g_szRepeaterHost.GetEvent();
 	event0[7]=RemoteEventReceivedFn.GetEvent();
 	event0[8]=All_clients_initialalizedFn.GetEvent();
-	event0[9]=IsThereFileTransBusyFn.GetEvent();		
-	event0[10]=IsThereAUltraEncodingClientFn.GetEvent();
-	event0[11]=Clear_Update_TrackerFn.GetEvent();
-	event0[12]=KillAuthClientsFn.GetEvent();
-	event0[13]=SetScreenOffsetFn.GetEvent();
-	event0[14]=SetSWOffsetFn.GetEvent();
-	event0[15]=UpdatePaletteFn.GetEvent();
-	event0[16]=UpdateLocalFormatFn.GetEvent();
-	event0[17]=SetNewSWSizeFn.GetEvent();
-	event0[18]=NotifyClients_StateChangeFn.GetEvent();
-	event0[19]=UpdateClipTextFn.GetEvent();
-	event0[20]=Closebyapp.GetEvent();
-	event0[21]=sas_eventFn.GetEvent();
+	event0[9]=IsThereAUltraEncodingClientFn.GetEvent();
+	event0[10]=Clear_Update_TrackerFn.GetEvent();
+	event0[11]=KillAuthClientsFn.GetEvent();
+	event0[12]=SetScreenOffsetFn.GetEvent();
+	event0[13]=SetSWOffsetFn.GetEvent();
+	event0[14]=UpdatePaletteFn.GetEvent();
+	event0[15]=UpdateLocalFormatFn.GetEvent();
+	event0[16]=SetNewSWSizeFn.GetEvent();
+	event0[17]=NotifyClients_StateChangeFn.GetEvent();
+	event0[18]=UpdateClipTextFn.GetEvent();
+	event0[19]=Closebyapp.GetEvent();
+	event0[20]=sas_eventFn.GetEvent();
 
 
 	while (!fShutdownOrdered)
 	{
-		DWORD dwEvent=WaitForMultipleObjects(22,event0,false,1000);
+		DWORD dwEvent=WaitForMultipleObjects(21,event0,false,1000);
 		#ifdef _DEBUG
 					char			szText[256];
 					sprintf(szText," ++++++ event %i\n",dwEvent-WAIT_OBJECT_0);
@@ -572,28 +569,20 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 					case WAIT_OBJECT_0 + 9: 
 						{
 						char result;
-						IsThereFileTransBusyFn.ReadData(NULL);
-						result=server->IsThereFileTransBusy();
-						IsThereFileTransBusyFn.SetData(&result);
-						}
-						break;
-					case WAIT_OBJECT_0 + 10: 
-						{
-						char result;
 						IsThereAUltraEncodingClientFn.ReadData(NULL);
 						result=server->IsThereAUltraEncodingClient();
 						IsThereAUltraEncodingClientFn.SetData(&result);
 						}
 						break;
 					
-					case WAIT_OBJECT_0 + 11: 
+					case WAIT_OBJECT_0 + 10: 
 						{
 						Clear_Update_TrackerFn.ReadData(NULL);
 						server->Clear_Update_Tracker();
 						Clear_Update_TrackerFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 12: 
+					case WAIT_OBJECT_0 + 11: 
 						{
 						KillAuthClientsFn.ReadData(NULL);
 						server->KillAuthClients();
@@ -601,7 +590,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						}
 						break;
 					
-					case WAIT_OBJECT_0 + 13: 
+					case WAIT_OBJECT_0 + 12: 
 						{
 						 _SetScreenOffset so;
 						SetScreenOffsetFn.ReadData((char*)&so);
@@ -609,7 +598,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						SetScreenOffsetFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 14: 
+					case WAIT_OBJECT_0 + 13: 
 						{
 						_SetSWOffset so;
 						SetSWOffsetFn.ReadData((char*)&so);
@@ -617,7 +606,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						SetSWOffsetFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 15: 
+					case WAIT_OBJECT_0 + 14: 
 						{
 						char value;
 						UpdatePaletteFn.ReadData((char*) &value);
@@ -626,7 +615,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						UpdatePaletteFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 16: 
+					case WAIT_OBJECT_0 + 15: 
 						{
 						char value;
 						UpdateLocalFormatFn.ReadData((char*) &value);
@@ -635,7 +624,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						UpdateLocalFormatFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 17: 
+					case WAIT_OBJECT_0 + 16: 
 						{
 						_SetNewSWSize so;
 						SetNewSWSizeFn.ReadData((char*)&so);
@@ -643,7 +632,7 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						SetNewSWSizeFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 18: 
+					case WAIT_OBJECT_0 + 17: 
 						{
 						_NotifyClients_StateChange so;
 						NotifyClients_StateChangeFn.ReadData((char*)&so);
@@ -651,19 +640,19 @@ DWORD WINAPI imp_desktop_thread(LPVOID lpParam)
 						NotifyClients_StateChangeFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 19: 
+					case WAIT_OBJECT_0 + 18: 
 						{
 						UpdateClipTextFn.ReadData(NULL);
 						server->UpdateClipText(serverSharedmem->cliptext);
 						UpdateClipTextFn.SetData(NULL);
 						}
 						break;
-					case WAIT_OBJECT_0 + 20: 
+					case WAIT_OBJECT_0 + 19: 
 						{
 						fShutdownOrdered=true;
 						}
 						break;
-					case WAIT_OBJECT_0 + 21: 
+					case WAIT_OBJECT_0 + 20: 
 						{
 						typedef VOID (WINAPI *SendSas)(BOOL asUser);
 						HINSTANCE Inst = LoadLibrary("sas.dll");
