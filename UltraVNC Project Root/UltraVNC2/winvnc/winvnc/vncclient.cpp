@@ -89,8 +89,7 @@ extern comm_serv SendInputFn;
 extern comm_serv Closebyservice;
 extern comm_serv AcceptDialogFn;
 
-
-
+bool lock_server_mouse_puch;
 
 // take a full path & file name, split it, prepend prefix to filename, then merge it back
 static std::string make_temp_filename(const char *szFullPath)
@@ -2119,6 +2118,7 @@ vncClientThread::run(void *arg)
 							med.dy=(DWORD)y;
 							med.dwData=wheel_movement;
 							mouse_eventFn.Call_Fnction((char*)&med,NULL);
+							lock_server_mouse_puch=true;
 //							vnclog.Print(LL_INTINFO, VNCLOG("########mouse_event :%i %i \n"),x,y);
 						}
 					else
@@ -2136,6 +2136,7 @@ vncClientThread::run(void *arg)
 								evt.mi.mouseData = wheel_movement;
 								evt.mi.time = 0;
 								SendInputFn.Call_Fnction((char*)&evt,NULL);
+								lock_server_mouse_puch=true;
 							}
 					}
 					// Save the old position
@@ -3565,36 +3566,42 @@ vncClient::TriggerUpdateThread()
 void
 vncClient::UpdateMouse(POINT *point)
 {
-	if (!m_mousemoved && !m_cursor_update_sent)
-	{
-	critsec l(GetUpdateLock());
 	
-    m_mousemoved=TRUE;
-	}
-	// nyama/marscha - PointerPos
-	// PointerPos code doesn take in account prim/secundary display
-	// offset needed
-	if (m_use_PointerPos && !m_cursor_pos_changed) {
-		POINT cursorPos;
-		cursorPos.x=point->x;
-		cursorPos.y=point->y;
-		cursorPos.x=cursorPos.x;
-		cursorPos.y=cursorPos.y;
-		cursorPos.x=cursorPos.x-(m_ScreenOffsetx+m_SWOffsetx);
-		cursorPos.y=cursorPos.y-(m_ScreenOffsety+m_SWOffsety);
-		//vnclog.Print(LL_INTINFO, VNCLOG("UpdateMouse m_cursor_pos(%d, %d), new(%d, %d)\n"), 
-		//  m_cursor_pos.x, m_cursor_pos.y, cursorPos.x, cursorPos.y);
-		if (cursorPos.x != m_cursor_pos.x || cursorPos.y != m_cursor_pos.y) {
-			// This movement isn't by this client, but generated locally or by other client.
-			// Send it to this client.
+		if (!m_mousemoved && !m_cursor_update_sent)
+		{
 			critsec l(GetUpdateLock());
-			
-			m_cursor_pos.x = cursorPos.x;
-			m_cursor_pos.y = cursorPos.y;
-			m_cursor_pos_changed = TRUE;
-			TriggerUpdateThread();
+		 m_mousemoved=TRUE;
 		}
-	}
+		// nyama/marscha - PointerPos
+		// PointerPos code doesn take in account prim/secundary display
+		// offset needed
+		if (!lock_server_mouse_puch)
+		{
+		if (m_use_PointerPos && !m_cursor_pos_changed) {
+			POINT cursorPos;
+			cursorPos.x=point->x;
+			cursorPos.y=point->y;
+			cursorPos.x=cursorPos.x;
+			cursorPos.y=cursorPos.y;
+			cursorPos.x=cursorPos.x-(m_ScreenOffsetx+m_SWOffsetx);
+			cursorPos.y=cursorPos.y-(m_ScreenOffsety+m_SWOffsety);
+			//vnclog.Print(LL_INTINFO, VNCLOG("UpdateMouse m_cursor_pos(%d, %d), new(%d, %d)\n"), 
+			//  m_cursor_pos.x, m_cursor_pos.y, cursorPos.x, cursorPos.y);
+			if (cursorPos.x != m_cursor_pos.x || cursorPos.y != m_cursor_pos.y) {
+				// This movement isn't by this client, but generated locally or by other client.
+				// Send it to this client.			
+				m_cursor_pos.x = cursorPos.x;
+				m_cursor_pos.y = cursorPos.y;
+				m_cursor_pos_changed = TRUE;
+				critsec l(GetUpdateLock());
+				TriggerUpdateThread();
+			}
+		}
+		}
+		else
+		{
+			lock_server_mouse_puch=false;
+		}
 }
 
 void

@@ -118,9 +118,7 @@ public:
 	// Is the client waiting on an update?
 	// YES IFF there is an incremental update region,
 	//     AND no changed or copied updates intersect it
-	virtual BOOL UpdateWanted() {
-		critsec l(GetUpdateLock());
-		
+	virtual BOOL UpdateWanted() {		
 #ifdef _DEBUG
 										char			szText[256];
 										sprintf(szText," UpdateWanted %i %i %i %i\n",!m_incr_rgn.is_empty(),
