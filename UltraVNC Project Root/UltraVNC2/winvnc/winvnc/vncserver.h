@@ -176,6 +176,7 @@ public:
 	// Update handling, used by the screen server
 	virtual rfb::UpdateTracker &GetUpdateTracker() {return m_update_tracker;};
 	virtual void UpdateMouse(POINT *point);
+	POINT POINT_updatemouse;
 	virtual void UpdateClipText(const char* text);
 	virtual void UpdatePalette(bool lock);
 	virtual void UpdateLocalFormat(bool lock);

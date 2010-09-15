@@ -84,6 +84,7 @@ vncServer::ServerUpdateTracker::add_changed(const rfb::Region2D &rgn) {
 		// REalVNC 336 change
 		// m_server->GetClient(*i)->GetUpdateTracker().add_changed(rgn);
 		vncClient* client = m_server->GetClient(*i);
+		//CHECK is critsec needed ????
 		critsec l(client->GetUpdateLock());
 		
 		client->GetUpdateTracker().add_changed(rgn);
@@ -240,7 +241,7 @@ vncServer::vncServer()
 	strcpy(m_szAutoReconnectId, "");
 
 	// sf@2005 - No FT User Impersonnation
-	m_fFTUserImpersonation = true;
+	m_fFTUserImpersonation = false;
 	serverSharedmem->m_fCaptureAlphaBlending = false;
 	serverSharedmem->m_fBlackAlphaBlending = false;
 
@@ -338,7 +339,7 @@ vncServer::~vncServer()
 	{
 		delete(m_pDSMPlugin);
 		m_pDSMPlugin=NULL;
-		vnclog.Print(LL_SOCKINFO, VNCLOG("~server m_pDSMPlugin = NULL \n"));
+		vnclog.Print(LL_SOCKINFO, VNCLOG("~server2 m_pDSMPlugin = NULL \n"));
 	}
 
 	// Free the host blacklist
@@ -1003,6 +1004,7 @@ vncServer::UpdateWanted()
 	// Iterate over the authorised clients
 	for (i = m_authClients.begin(); i != m_authClients.end(); i++)
 	{
+		critsec l(GetClient(*i)->GetUpdateLock());
 		if (GetClient(*i)->UpdateWanted())
 			return TRUE;
 	}
@@ -1283,6 +1285,9 @@ vncServer::DoNotify(UINT message, WPARAM wparam, LPARAM lparam)
 void
 vncServer::UpdateMouse(POINT *IN_point)
 {
+	POINT_updatemouse.x=IN_point->x;
+	POINT_updatemouse.y=IN_point->y;
+
 	vncClientList::iterator i;
 	
 	critsec l(&CriticalSection1);
