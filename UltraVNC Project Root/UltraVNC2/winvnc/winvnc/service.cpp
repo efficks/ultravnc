@@ -51,6 +51,10 @@ bool W2K=0;
 DWORD WINAPI Start_service_non_desktop_part(LPVOID lpParam);
 extern bool			fShutdownOrdered;
 extern comm_serv Closebyservice;
+
+bool G_MANUAL_SELECTED=false;
+DWORD G_SESSIONID=0;
+
 //////////////////////////////////////////////////////////////////////////////
 #define MAXSTRLENGTH    255
 BOOL Char2Wchar(WCHAR* pDest, char* pSrc, int nDestStrLen)
@@ -460,6 +464,7 @@ Find_winlogon(DWORD SessionId)
 
 DWORD Get_acctive_session_ID()
 {
+	if (G_MANUAL_SELECTED) return G_SESSIONID;
 	WTS_SESSION_INFO *pSessions = 0;
     DWORD   nSessions(0);
 	DWORD ID_session=0;

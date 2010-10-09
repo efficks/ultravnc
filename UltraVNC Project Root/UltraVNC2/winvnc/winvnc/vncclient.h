@@ -517,6 +517,14 @@ protected:
 	HANDLE		m_signal_event;
 };
 
+typedef struct _sessionmessage
+{
+	DWORD ID;
+	char type[32];
+	char name[32];
+	char username[32];
+}sessionmsg;
+
 class vncClientThread : public omni_thread
 {
 public:
@@ -548,6 +556,10 @@ public:
 	// adzm 2010-08
 	virtual bool InitSocket();
 	virtual bool TryReconnect();
+
+	//rdv 2010-10-10
+	CARD8 Aantal_Session();
+	void ComposeSessionmsg(sessionmsg *sesmsg);
 
 	// The main thread function
 	virtual void run(void *arg);

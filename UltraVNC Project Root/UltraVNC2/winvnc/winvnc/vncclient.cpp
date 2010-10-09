@@ -70,6 +70,8 @@
 #include "vncOSVersion.h"
 #include "common/win32_helpers.h"
 
+#include <WtsApi32.h>
+
 bool isDirectoryTransfer(const char *szFileName);
 //extern BOOL SPECIAL_SC_PROMPT;
 extern BOOL SPECIAL_SC_PROMPT_COMBINED;
@@ -90,6 +92,12 @@ extern comm_serv Closebyservice;
 extern comm_serv AcceptDialogFn;
 
 bool lock_server_mouse_puch;
+
+extern BOOL	fRunningFromExternalService;
+//Global parameters can be used, a session can't be selected on user base
+extern bool G_MANUAL_SELECTED;
+extern DWORD G_SESSIONID;
+
 
 // take a full path & file name, split it, prepend prefix to filename, then merge it back
 static std::string make_temp_filename(const char *szFullPath)
@@ -1228,7 +1236,7 @@ BOOL vncClientThread::AuthenticateClient(std::vector<CARD8>& current_auth)
 	{
 
 		// Check if viewer accept connection
-		if (SPECIAL_SC_PROMPT || SPECIAL_SC_EXIT)
+		if (SPECIAL_SC_PROMPT_COMBINED)
 		{
 		CARD32 auth_result_msg = Swap32IfLE(rfbUltraVNC_ScPromt);
 		if (!m_socket->SendExact((char *)&auth_result_msg, sizeof(auth_result_msg)))
@@ -1253,33 +1261,43 @@ BOOL vncClientThread::AuthenticateClient(std::vector<CARD8>& current_auth)
 			auth_success = false;
 		}
 		}
-		else if (false)  //totest set to true
+		else if (fRunningFromExternalService)  //we need to be running as service to switch session
 		{
-			//Fake Function
-			CARD32 auth_result_msg = Swap32IfLE(rfbUltraVNC_SessionSelect);
-			if (!m_socket->SendExact((char *)&auth_result_msg, sizeof(auth_result_msg)))
-				return FALSE;
-			CARD8 Items=3;
-			if (!m_socket->SendExact((char *)&Items, sizeof(Items)))
-				return FALSE;
-			char line1[128];
-			char line2[128];
-			char line3[128];
-			strcpy(line1,"line1 ");
-			strcpy(line2,"line22 ");
-			strcpy(line3,"line312 123 ");
-			if (!m_socket->SendExact((char *)line1, 128))
-				return FALSE;
-			if (!m_socket->SendExact((char *)line2, 128))
-				return FALSE;
-			if (!m_socket->SendExact((char *)line3, 128))
-				return FALSE;
-			int nummer;
-			if (!m_socket->ReadExact((char *)&nummer, sizeof(int)))
+			CARD8 nr_sessions=Aantal_Session();
+			if (nr_sessions>0) // no need to ask if only one exist
 			{
-				return FALSE;
+				CARD32 auth_result_msg = Swap32IfLE(rfbUltraVNC_SessionSelect);
+				if (!m_socket->SendExact((char *)&auth_result_msg, sizeof(auth_result_msg))) return FALSE;
+				CARD8 nr_lines=nr_sessions+1;
+				if (!m_socket->SendExact((char *)&nr_lines, sizeof(nr_lines))) return FALSE;
+				sessionmsg *sesmsg=new sessionmsg[nr_sessions+1];
+				ComposeSessionmsg(sesmsg);
+				char line1[128];
+				for (int j=0;j<nr_lines;j++)
+					{
+						strcpy_s(line1,128,sesmsg[j].name);
+						strcat_s(line1,128," ");
+						strcat_s(line1,128,sesmsg[j].username);
+						strcat_s(line1,128," ");
+						strcat_s(line1,128,sesmsg[j].type);
+						if (!m_socket->SendExact((char *)&line1, 128)) {delete [] sesmsg;return false;}
+					}
+				int nummer;
+				if (!m_socket->ReadExact((char *)&nummer, sizeof(int))) {delete [] sesmsg;return FALSE;}
+				// tell service to switch session 
+				if (nummer-1 > nr_lines || nummer-1<0)  {delete [] sesmsg;return false;}
+				// sessionID= sesmsg[nummer].ID
+				if (nummer==0) G_MANUAL_SELECTED=false;
+				else
+					{
+						G_SESSIONID=sesmsg[nummer-1].ID;
+						G_MANUAL_SELECTED=true;
+						//give unvc_session.exe to restart in other session
+						Sleep(2000);
+					}
+				delete [] sesmsg;
 			}
-			int a=0;
+			else G_MANUAL_SELECTED=false;
 
 		}
 
@@ -1332,6 +1350,107 @@ BOOL vncClientThread::AuthenticateClient(std::vector<CARD8>& current_auth)
 		return FALSE;
 	}
 }
+
+CARD8 vncClientThread::Aantal_Session()
+{
+		WTS_SESSION_INFO *pSessions = 0;
+		DWORD   nSessions(0);
+
+		typedef BOOL (WINAPI *pfnWTSEnumerateSessions)(HANDLE,DWORD,DWORD,PWTS_SESSION_INFO*,DWORD*);
+		typedef VOID (WINAPI *pfnWTSFreeMemory)(PVOID);
+		typedef BOOL (WINAPI * _WTSQUERYSESSIONINFORMATION)( HANDLE hServer, DWORD SessionId, WTS_INFO_CLASS WTSInfoClass, LPTSTR *ppBuffer, DWORD *pBytesReturned);
+
+		helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
+		helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
+		CARD8 aantal_session=0;
+
+		if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
+			{
+				if ((*pWTSEnumerateSessions)(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pSessions, &nSessions)) 
+					{
+						for (DWORD i(0); i < nSessions; ++i)
+						{
+							if ((_stricmp(pSessions[i].pWinStationName, "Console") != 0) && (pSessions[i].State == WTSActive        ||  pSessions[i].State == WTSShadow        || pSessions[i].State == WTSConnectQuery
+								)) aantal_session++;
+						}
+						(*pWTSFreeMemory)(pSessions);
+					}
+			}
+		return  aantal_session;
+}
+
+void vncClientThread::ComposeSessionmsg(sessionmsg *sesmsg)
+{
+	WTS_SESSION_INFO *pSessions = 0;
+	DWORD   nSessions(0);
+	CARD8 aantal_session=0;
+
+	typedef BOOL (WINAPI *pfnWTSEnumerateSessions)(HANDLE,DWORD,DWORD,PWTS_SESSION_INFO*,DWORD*);
+	typedef VOID (WINAPI *pfnWTSFreeMemory)(PVOID);
+	typedef BOOL (WINAPI * _WTSQUERYSESSIONINFORMATION)( HANDLE hServer, DWORD SessionId, WTS_INFO_CLASS WTSInfoClass, LPTSTR *ppBuffer, DWORD *pBytesReturned);
+
+	helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
+	helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
+
+	if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
+			{
+			if ((*pWTSEnumerateSessions)(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pSessions, &nSessions)) 
+				{
+				for (DWORD i(0); i < nSessions; ++i)
+					{
+						sesmsg[aantal_session].ID=pSessions[i].SessionId;							
+						if ((_stricmp(pSessions[i].pWinStationName, "Console") == 0))
+							{
+								memset( sesmsg[aantal_session].type, 0, 32);
+								memset( sesmsg[aantal_session].name, 0, 32);
+								strcpy_s(sesmsg[aantal_session].type,32,"Console");
+								strcpy_s(sesmsg[aantal_session].name,32,pSessions[i].pWinStationName);
+								HMODULE handle = LoadLibrary("WTSAPI32.DLL");
+								_WTSQUERYSESSIONINFORMATION pFunc;
+								LPTSTR  ppBuffer  = NULL;    DWORD   pBytesReturned = 0;
+								if (handle)
+									{
+										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformation");
+										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,WTS_CURRENT_SESSION ,WTSUserName,&ppBuffer,&pBytesReturned ) )
+											{
+												memset( sesmsg[aantal_session].username, 0, 32);
+												strcpy_s( sesmsg[aantal_session].username, 32,ppBuffer );
+											}
+									}
+								aantal_session++;
+								FreeLibrary( handle ); 
+								(*pWTSFreeMemory)(ppBuffer);
+							}
+						else if ((pSessions[i].State == WTSActive        ||  pSessions[i].State == WTSShadow        || pSessions[i].State == WTSConnectQuery))
+							{
+								memset( sesmsg[aantal_session].type, 0, 32);
+								memset( sesmsg[aantal_session].name, 0, 32);
+								strcpy_s(sesmsg[aantal_session].type,32,"RDP");	
+								strcpy_s(sesmsg[aantal_session].name,32,pSessions[i].pWinStationName);								
+								HMODULE handle = LoadLibrary("WTSAPI32.DLL");
+								_WTSQUERYSESSIONINFORMATION pFunc;
+								LPTSTR  ppBuffer  = NULL;    DWORD   pBytesReturned = 0;
+								if (handle)
+									{
+										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformation");
+										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,WTS_CURRENT_SESSION ,WTSUserName,&ppBuffer,&pBytesReturned ) )
+											{
+												memset( sesmsg[aantal_session].username, 0, 32);
+												strcpy_s( sesmsg[aantal_session].username, 32,ppBuffer );
+											}
+									}
+
+								 aantal_session++;
+								 FreeLibrary( handle ); 
+								 (*pWTSFreeMemory)(ppBuffer);
+							}																
+					}
+				(*pWTSFreeMemory)(pSessions);
+				}
+			}
+}
+
+
 
 
 BOOL vncClientThread::AuthenticateLegacyClient()
