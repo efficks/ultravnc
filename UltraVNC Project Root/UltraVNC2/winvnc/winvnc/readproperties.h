@@ -141,6 +141,9 @@ protected:
 
 	BOOL m_pref_UseDSMPlugin;
 	char m_pref_szDSMPlugin[128];
+	//adzm 2010-05-12 - dsmplugin config
+	char m_pref_DSMPluginConfig[512];
+
     void LoadDSMPluginName(HKEY key, char *buffer);
 
 	char m_pref_path111[500];

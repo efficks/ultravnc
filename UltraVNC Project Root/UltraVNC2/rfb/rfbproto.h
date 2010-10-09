@@ -1,5 +1,5 @@
 /*
-//  Copyright (C) 2010 Ultr@VNC Team Members. All Rights Reserved.
+//  Copyright (C) 2002 Ultr@VNC Team Members. All Rights Reserved.
 //  Copyright (C) 2000-2002 Const Kaplinsky. All Rights Reserved.
  *  Copyright (C) 2002 RealVNC Ltd.  All Rights Reserved.
  *  Copyright (C) 1999 AT&T Laboratories Cambridge.  All Rights Reserved.
@@ -56,9 +56,6 @@
  * bytes so that it can be interspersed with 32-bit pixel data without
  * affecting alignment.
  */
-// If the source code for the program is not available from the place from
-// which you received this file, check 
-// http://www.uvnc.com/
 
 typedef struct {
     CARD16 x;
@@ -164,10 +161,54 @@ typedef struct {
  * The format string below can be used in sprintf or sscanf to generate or
  * decode the version string respectively.
  */
-
 #define rfbProtocolVersionFormat "RFB %03d.%03d\n"
 #define rfbProtocolMajorVersion 3
-#define rfbProtocolMinorVersion 4 // Reserved to UltravNC ! (as well as "6")
+#define rfbProtocolMinorVersion 8
+//#define rfbProtocolMinorVersion 4 // Reserved to UltravNC ! (as well as "6")
+
+//adzm 2010-09
+/*
+ For clarity, I'll explain the way the protocol version numbers worked before RFB 3.8
+
+ The 'base' minor version was 4, eg 3.4
+ If mslogon is NOT enabled:
+   2 is added to the base (3.6, 3.16 if SC_PROMPT)
+   Note that recent uvnc servers simply send rfbMsLogon as an auth type which makes this entirely unnecessary
+ If SC_PROMPT is enabled:
+   10 is added to the base (3.14, 3.16 if NOT mslogon)
+
+ In summary, 3.6 is 'standard'. 3.4 if using mslogon, 3.14 if mslogon + sc_prompt, 3.16 if sc_prompt and not mslogon
+
+ Now the server sends the version, and the viewer negotiates the version to send back.
+
+ The viewer handles the minor version as thus:
+ (note that 'file transfer' is a generic term for various ultravnc features, such as chat, etc)
+ 4 - mslogon, file transfer
+ 6 - file transfer
+ 14 - mslogon, file transfer, SC_PROMPT
+ 16 - file transfer, SC_PROMPT
+ <=3 - nothing special
+ if minor version falls into any of the above categories, the same version is echoed back to the server
+ otherwise, the default (3.4) is sent.
+
+   After receiving the viewer's version, if still 3.14 or 3.16, then SC_PROMPT is enabled:
+     a string describing the machine is sent immediately after the version negotiation.
+     Format of message is the length of string (little endian), followed by the string.
+     The viewer sends back a 32-bit int (little endian) value of 1 to accept, or 0 to refuse the connection
+
+ RFB 3.8 changes:
+  mslogon is part of the authentication enum, and has been for a while. we don't need it in the RFB version any longer.
+  SC_PROMPT is definitely a strange beast, and one that is unique enough to uvnc that I think we can continue
+    the way we have been. So for SC_PROMPT, we can just send RFB 003.018\n. We really want to know about this
+    before the connection continues further.
+
+ In summary, server will now always send 3.8 unless it needs to send 3.18 for SC_PROMPT.
+   in both situations, the old uvnc viewer will reply with 3.4
+   the server can easily disable the SC_PROMPT stuff if the viewer does not indicate that it can support it.
+ Downside is that old viewers will no longer have file transfer and text chat available,
+   but that kind of stuff should have been negotiated via pseudoencodings anyway!
+   Since the basic VNC functionality remains, I think that is acceptable.
+*/
 
 typedef char rfbProtocolVersionMsg[13];	/* allow extra byte for null */
 
@@ -183,11 +224,86 @@ typedef char rfbProtocolVersionMsg[13];	/* allow extra byte for null */
  * version 3.0 of the protocol this may have one of the following values:
  */
 
+// adzm 2010-09
+/*
+ pre-RFB 3.8 -- rfbUltraVNC_SecureVNCPlugin extension
+
+ If using SecureVNCPlugin (or any plugin that uses the integrated plugin architecture) the unofficial 1.0.8.2 version sends
+ the auth type rfbUltraVNC_SecureVNCPlugin.
+
+ The intention of this auth type is to act as a 'master' and once complete, allow other authentication types to occur
+ over the now-encrypted communication channel.
+
+ So, server sends 32-bit network order int for rfbUltraVNC_SecureVNCPlugin and the loop begins:
+   server sends 16-bit little-endian challenge length, followed by the challenge
+   viewer responds with 16-bit little-endian response length, followed by the response
+   this continues until the plugin says to stop the loop. Currently the SecureVNC plugin only
+     does one loop, but this functionality exists in order to implement more complicated handshakes.
+ 
+ If there was a failure, and an error message is available, rfbVncAuthFailedEx (3) is sent followed by the length of the
+   error string and then the error string
+ If there was a failure, and no error message is available, simply send rfbVncAuthFailed (1)
+ otherwise, if using mslogon, send rfbMsLogon, and if not using mslogon, send rfbVncAuthOK(0)
+
+ at this point the handshake is 'complete' and all further communication is encrypted.
+
+ if using mslogon, mslogon authentication will now occur (since the rfbMsLogon packet was sent)
+
+ RFB 3.8 changes
+
+ Now we send a byte for # of supported auth types, and then a byte for each auth type.
+
+ rfbUltraVNC is not being used for anything, although rfbUltraVNC_SecureVNCPlugin has been established somewhat.
+ Like a lot of these things, most of the values in the authentication range will end up going unused.
+ 
+ Rather than complicate things further, I hereby declare this scheme: the top 4 bits will define the 'owner'
+ of that set of values, and the bottom 4 bits will define the type. All of the values in the RFB 3.8 spec
+ can then be covered by 0x0 and 0x1 for the top 4 bits.
+
+                              mask
+ RealVNC-approved values:     0x0F
+ RealVNC-approved values:     0x1F
+ reserved:                    0x2F
+ reserved:                    0x3F
+ reserved:                    0x4F
+ reserved:                    0x5F
+ reserved:                    0x6F
+ UltraVNC:                    0x7F
+ TightVNC:                    0x8F
+ reserved:                    0x9F
+ reserved:                    0xAF
+ reserved:                    0xBF
+ reserved:                    0xCF
+ reserved:                    0xDF
+ reserved:                    0xEF
+ reserved:                    0xFF
+*/
+
 #define rfbConnFailed 0
+#define rfbInvalidAuth 0
 #define rfbNoAuth 1
 #define rfbVncAuth 2
-/* rfbMsLogon indicates UltraVNC's MS-Logon with (hopefully) better security */
-#define rfbMsLogon 0xfffffffa
+#define rfbUltraVNC 17
+// adzm 2010-09 - After rfbUltraVNC, auth repeats via rfbVncAuthContinue
+
+#define rfbUltraVNC_ScPromt 0x68
+#define rfbUltraVNC_SessionSelect 0x69
+// adzm 2010-09 - Ultra subtypes - SecureVNCPlugin will remain as the Ultra value
+#define rfbUltraVNC_MsLogonIAuth 0x70
+
+	// mslogonI never seems to be used anymore -- the old code would say if (m_ms_logon) AuthMsLogon (II) else AuthVnc
+	// and within AuthVnc would be if (m_ms_logon) { /* mslogon code */ }. That could never be hit since the first case
+	// would always match!
+
+#define rfbUltraVNC_MsLogonIIAuth 0x71
+#define rfbUltraVNC_SecureVNCPluginAuth 0x72
+
+//adzm 2010-05-10 - for backwards compatibility with pre-3.8
+#define rfbLegacy_SecureVNCPlugin 17
+#define rfbLegacy_MsLogon 0xfffffffa // UltraVNC's MS-Logon with (hopefully) better security
+
+// please see ABOVE these definitions for more discussion on authentication
+
 
 /*
  * rfbConnFailed:	For some reason the connection failed (e.g. the server
@@ -213,7 +329,12 @@ typedef char rfbProtocolVersionMsg[13];	/* allow extra byte for null */
 
 #define rfbVncAuthOK 0
 #define rfbVncAuthFailed 1
+// neither of these are used any longer in RFB 3.8
 #define rfbVncAuthTooMany 2
+#define rfbVncAuthFailedEx 3 //adzm 2010-05-11 - Send an explanatory message for the failure (if any)
+
+// adzm 2010-09 - rfbUltraVNC or other auths may send this to restart authentication (perhaps over a now-secure channel)
+#define rfbVncAuthContinue 0xFFFFFFFF
 
 
 /*-----------------------------------------------------------------------------
@@ -226,9 +347,15 @@ typedef char rfbProtocolVersionMsg[13];	/* allow extra byte for null */
  * access to this client by disconnecting all other clients.
  */
 
+// adzm 2010-09 - worked around this after all, but left the enum in here anyway.
 typedef struct {
-    CARD8 shared;
+    CARD8 flags; // rfbClientInitMsgFlags
 } rfbClientInitMsg;
+
+// adzm 2010-09
+typedef enum {
+	clientInitShared       = 0x01,
+} rfbClientInitMsgFlags;
 
 #define sz_rfbClientInitMsg 1
 
@@ -308,6 +435,8 @@ typedef struct {
 #endif
 #define rfbKeepAlive 13 // 16 July 2008 jdp -- bidirectional
 #define rfbPalmVNCSetScaleFactor 0xF // PalmVNC 1.4 & 2.0 SetScale Factor message
+// adzm 2010-09 - Notify streaming DSM plugin support
+#define rfbNotifyPluginStreaming 0x50
 
 
 
@@ -391,6 +520,11 @@ typedef struct {
 #define rfbEncodingQualityLevel7   0xFFFFFFE7
 #define rfbEncodingQualityLevel8   0xFFFFFFE8
 #define rfbEncodingQualityLevel9   0xFFFFFFE9
+
+// adzm - 2010-07 - Extended clipboard support
+#define rfbEncodingExtendedClipboard  0xC0A1E5CE
+  // adzm 2010-09 - Notify streaming DSM plugin support
+#define rfbEncodingPluginStreaming       0xC0A1E5CF
 
 
 
@@ -680,12 +814,109 @@ typedef struct {
     CARD8 type;			/* always rfbServerCutText */
     CARD8 pad1;
     CARD16 pad2;
-    CARD32 length;
-    /* followed by char text[length] */
+    CARD32 length; // will be negative to notify viewer that it accepts extended clipboard data.
+	// adzm - 2010-07 - Extended clipboard support
+	/*
+	rfbEncodingExtendedClipboard provides extended clipboard functionality.
+	If extended clipboard data is being used, the length will be negative.
+	The message follows with unsigned char[abs(length)] data. The first sz_rfbExtendedClipboardData is the rfbExtendedClipboardData struct.
+	The server notifies the viewer that it accepts the rfbEncodingExtendedClipboard extension to the protocol
+	by immediately sending an rfbServerCutTextMsg with the clipCaps flags set in rfbExtendedClipboardData,
+	which determines current version and also size limits of the main clipboard formats.
+
+	if using classic clipboard, followed by char text[length]
+    */
 } rfbServerCutTextMsg;
 
 #define sz_rfbServerCutTextMsg 8
 
+
+// adzm - 2010-07 - Extended clipboard support
+// this struct is used as the data within an rfbServerCutTextMsg or rfbClientCutTextMsg.
+typedef struct {
+	CARD32 flags;		// see rfbExtendedClipboardDataFlags
+
+	// followed by unsigned char data[(rfbServerCutTextMsg|rfbClientCutTextMsg).length - sz_rfbExtendedClipboardData]
+} rfbExtendedClipboardData;
+
+#define sz_rfbExtendedClipboardData 4
+
+typedef enum {
+	// formats
+	clipText		= 0x00000001,	// Unicode text (UTF-8 encoding)
+	clipRTF			= 0x00000002,	// Microsoft RTF format
+	clipHTML		= 0x00000004,	// Microsoft HTML clipboard format
+	clipDIB			= 0x00000008,	// Microsoft DIBv5
+	// line endings are not touched and remain as \r\n for Windows machines. Terminating NULL characters are preserved.
+
+	// Complex formats
+	// These formats should also have 3 more CARD32 values after rfbExtendedClipboardData.flags. This will allow them
+	// to set up more complex messages (such as preview) or subformats (such as lossless, png, jpeg, lossy) etc.
+	// The rest should follow the standard format of a 32-bit length of the uncompressed data, followed by the data.
+	//
+	// Please note none of these are implemented yet, but seem obvious enough that their values are reserved here
+	// for posterity.
+	clipFiles		= 0x00000010,	// probably also more than one file
+	clipFormatMask	= 0x0000FFFF,
+
+	// reserved
+	clipReservedMask= 0x00FF0000,	// more than likely will be used for more formats, but may be used for more actions
+									// or remain unused for years to come.
+
+	// actions
+	clipCaps		= 0x01000000,	// which formats are supported / desired.
+									// Message data should include limits on maximum automatic uncompressed data size for each format
+									// in 32-bit values (in order of enum value). If the data exceeds that value, it must be requested.
+									// This can be used to disable the clipboard entirely by setting no supported formats, or to
+									// only enable manual clipboard transfers by setting the maximum sizes to 0.
+									// can be combined with other actions to denote actions that are supported
+									// The server must send this to the client to notify that it understands the new clipboard format.
+									// The client may respond with its own clipCaps; otherwise the server should use the defaults.
+									// Currently, the defaults are the messages and formats defined in this initial implementation
+									// that are common to both server and viewer:
+									//    clipCaps | clipRequest | clipProvide | (clipNotify if viewer, clipPeek if server)
+									//    clipText | clipRTF | clipHTML | clipDIB
+									//    (Note that clipNotify is only relevant from server->viewer, and clipPeek is only relevant
+									//     from viewer->server. Therefore they are left out of the defaults but can be set with the
+									//     rest of the caps if desired.)
+									// It is also strongly recommended to set up maximum sizes for the formats since currently
+									// the data is sent synchronously and cannot be interrupted. If data exceeds the maximum size,
+									// then the server should send the clipNotify so the client may send clipRequest. Current default 
+									// limits were somewhat arbitrarily chosen as 2mb (10mb for text) and 0 for image
+									// Note that these limits are referring to the length of uncompressed data.
+	clipRequest		= 0x02000000,	// request clipboard data (should be combined with desired formats)
+									// Message should be empty
+									// Response should be a clipProvide message with appropriate formats. This should ignore any
+									// maximum size limitations specified in clipCaps.
+	clipPeek		= 0x04000000,	// Peek at what is currently available in the clipboard.
+									// Message should be empty
+									// Respond with clipNotify including all available formats in the flags
+	clipNotify		= 0x08000000,	// notify that the formats combined with the flags are available for transfer.
+									// Message should be empty
+									// When a clipProvide message is received, then all formats notified as being available are 
+									// invalidated. Therefore, when implementing, ensure that clipProvide messages are sent before
+									// clipNotify messages, specifically when in response to a change in the clipboard
+	clipProvide		= 0x10000000,	// send clipboard data (should be combined with sent formats)
+									// All message data including the length is compressed by a single zlib stream.
+									// First is the 32-bit length of the uncompressed data, followed by the data itself
+									// Repeat for each format listed in order of enum value
+									// Invalidate any formats that were notified as being available.
+	clipActionMask	= 0xFF000000,
+
+	clipInvalid		= 0xFFFFFFFF,
+
+} rfbExtendedClipboardDataFlags;
+
+
+
+// adzm 2010-09 - Notify streaming DSM plugin support
+typedef struct {
+    CARD8 type;			/* always rfbServerCutText */
+    CARD8 pad1;
+    CARD16 flags; // reserved - always 0
+} rfbNotifyPluginStreamingMsg;
+
+#define sz_rfbNotifyPluginStreamingMsg	4
 
 
 /*-----------------------------------------------------------------------------
@@ -856,6 +1087,9 @@ typedef struct {
 #define sz_rfbKeepAliveMsg 1
 #define KEEPALIVE_INTERVAL 5
 #define KEEPALIVE_HEADROOM 1
+// adzm 2010-08
+#define SOCKET_KEEPALIVE_TIMEOUT 10000
+#define SOCKET_KEEPALIVE_INTERVAL 1000
 
 #define FT_RECV_TIMEOUT    30
 
@@ -876,6 +1110,7 @@ typedef union {
 	rfbTextChatMsg tc;
     rfbServerStateMsg ss;
     rfbKeepAliveMsg kp;
+	rfbNotifyPluginStreamingMsg nsd;
 } rfbServerToClientMsg;
 
 
@@ -1043,9 +1278,16 @@ typedef struct {
 typedef struct {
     CARD8 type;			/* always rfbClientCutText */
     CARD8 pad1;
-    CARD16 pad2;
+    CARD16 pad2;	
     CARD32 length;
-    /* followed by char text[length] */
+	// adzm - 2010-07 - Extended clipboard support
+	/*
+	rfbEncodingExtendedClipboard provides extended clipboard functionality.
+	If extended clipboard data is being used, the length will be negative.
+	See rfbExtendedClipboardData for more info.
+
+	Otherwise, if using classic clipboard, followed by char text[length]
+    */
 } rfbClientCutTextMsg;
 
 #define sz_rfbClientCutTextMsg 8

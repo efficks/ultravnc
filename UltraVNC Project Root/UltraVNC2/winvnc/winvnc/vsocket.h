@@ -119,6 +119,12 @@ public:
   VBool SetSendTimeout(VCard32 msecs);
   VBool SetRecvTimeout(VCard32 msecs);
 
+  // adzm 2010-08
+  VBool SetDefaultSocketOptions();
+
+  // adzm 2010-08
+  static void SetSocketKeepAliveTimeoutDefault(int timeout) { m_defaultSocketKeepAliveTimeout = timeout; }
+
   bool VSocket::GetPeerAddress(char *address, int size);
   SOCKET GetChannel() const { return (SOCKET) sock; }
   // I/O routines
@@ -139,13 +145,23 @@ public:
   VBool SendExact(const char *buff, const VCard bufflen, unsigned char msgType); // sf@2002 - DSMPlugin
   VBool SendExactQueue(const char *buff, const VCard bufflen);
   VBool ReadExact(char *buff, const VCard bufflen);
-  void ClearQueue();
+  VBool ClearQueue();
 
   // sf@2002 - DSMPlugin
   //adzm 2009-06-20
   void SetDSMPluginPointer(CDSMPlugin* pDSMPlugin);
   void EnableUsePlugin(bool fEnable) { m_fUsePlugin = fEnable;};
   bool IsUsePluginEnabled(void) { return m_fUsePlugin;};
+
+  //adzm 2010-05-12 - dsmplugin config
+  void SetDSMPluginConfig(char* szDSMPluginConfig);
+  // adzm 2010-09
+  void SetPluginStreamingIn() { m_fPluginStreamingIn = true; }
+  void SetPluginStreamingOut() { m_fPluginStreamingOut = true; }
+  bool IsPluginStreamingIn(void) { return m_fPluginStreamingIn; }
+  bool IsPluginStreamingOut(void) { return m_fPluginStreamingOut; }
+
+
   void SetWriteToNetRectBuffer(bool fEnable) {m_fWriteToNetRectBuf = fEnable;}; 
   bool GetWriteToNetRectBuffer(void) {return m_fWriteToNetRectBuf;};
   int  GetNetRectBufOffset(void) {return m_nNetRectBufOffset;};
@@ -155,7 +171,8 @@ public:
   VBool SendExactHTTP(const char *buff, const VCard bufflen);
   VBool ReadExactHTTP(char *buff, const VCard bufflen);
 
-
+  //adzm 2010-05-10
+  IIntegratedPlugin* GetIntegratedPlugin() { return m_pIntegratedPluginInterface; };
 
   ////////////////////////////
   // Internal structures
@@ -166,7 +183,11 @@ protected:
   CDSMPlugin* m_pDSMPlugin; // sf@2002 - DSMPlugin
   //adzm 2009-06-20
   IPlugin* m_pPluginInterface;
+  //adzm 2010-05-10
+  IIntegratedPlugin* m_pIntegratedPluginInterface;
   bool m_fUsePlugin;
+   bool m_fPluginStreamingIn; //adzm 2010-09
+  bool m_fPluginStreamingOut; //adzm 2010-09
   omni_mutex m_TransMutex;
   omni_mutex m_RestMutex;
   omni_mutex m_CheckMutex;
@@ -184,6 +205,9 @@ protected:
 
   char queuebuffer[9000];
   DWORD queuebuffersize;
+
+  // adzm 2010-08
+  static int m_defaultSocketKeepAliveTimeout;
 
 };
 

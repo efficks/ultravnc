@@ -82,6 +82,7 @@ ReadProperties::ReadProperties()
 	m_pref_SingleWindow = FALSE;
 	m_pref_UseDSMPlugin = FALSE;
 	*m_pref_szDSMPlugin = '\0';
+	m_pref_DSMPluginConfig[0] = '\0';
 	m_pref_EnableFileTransfer = TRUE;
 	m_pref_FTUserImpersonation = TRUE;
 	m_pref_EnableBlankMonitor = TRUE;
@@ -248,6 +249,10 @@ ReadProperties::ApplyUserPrefs()
 	// DSM Plugin prefs
 	m_server->EnableDSMPlugin(m_pref_UseDSMPlugin);
 	m_server->SetDSMPluginName(m_pref_szDSMPlugin);
+
+	//adzm 2010-05-12 - dsmplugin config
+	m_server->SetDSMPluginConfig(m_pref_DSMPluginConfig);
+
 	if (m_server->IsDSMPluginEnabled()) 
 	{
 		vnclog.Print(LL_INTINFO, VNCLOG("$$$$$$$$$$ ApplyUserPrefs - Plugin Enabled - Call SetDSMPlugin() \n"));
@@ -312,8 +317,6 @@ void ReadProperties::LoadFromIniFile()
 {
 	m_pref_RequireMSLogon = myIniFile.ReadInt("admin", "MSLogonRequired", m_pref_RequireMSLogon);
 	m_pref_NewMSLogon = myIniFile.ReadInt("admin", "NewMSLogon", m_pref_NewMSLogon);
-	m_pref_UseDSMPlugin = myIniFile.ReadInt("admin", "UseDSMPlugin", m_pref_UseDSMPlugin);
-	myIniFile.ReadString("admin", "DSMPlugin",m_pref_szDSMPlugin,128);
 	m_pref_EnableFileTransfer = myIniFile.ReadInt("admin", "FileTransferEnabled", m_pref_EnableFileTransfer);
 	m_pref_FTUserImpersonation = myIniFile.ReadInt("admin", "FTUserImpersonation", m_pref_FTUserImpersonation); // sf@2005
 	m_pref_EnableBlankMonitor = myIniFile.ReadInt("admin", "BlankMonitorEnabled", m_pref_EnableBlankMonitor);
@@ -321,8 +324,12 @@ void ReadProperties::LoadFromIniFile()
 	m_pref_DefaultScale = myIniFile.ReadInt("admin", "DefaultScale", m_pref_DefaultScale);
 	m_pref_CaptureAlphaBlending = myIniFile.ReadInt("admin", "CaptureAlphaBlending", m_pref_CaptureAlphaBlending); // sf@2005
 	m_pref_BlackAlphaBlending = myIniFile.ReadInt("admin", "BlackAlphaBlending", m_pref_BlackAlphaBlending); // sf@2005
+
 	m_pref_UseDSMPlugin = myIniFile.ReadInt("admin", "UseDSMPlugin", m_pref_UseDSMPlugin);
 	myIniFile.ReadString("admin", "DSMPlugin",m_pref_szDSMPlugin,128);
+	//adzm 2010-05-12 - dsmplugin config
+	myIniFile.ReadString("admin", "DSMPluginConfig", m_pref_DSMPluginConfig, 512);
+
 	m_pref_Primary = myIniFile.ReadInt("admin", "primary", m_pref_Primary);
 	m_pref_Secondary = myIniFile.ReadInt("admin", "secondary", m_pref_Secondary);
 	// Connection prefs

@@ -45,6 +45,7 @@ typedef SHORT vncClientId;
 #include <list>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "common/win32_helpers.h"
 
 typedef std::list<vncClientId> vncClientList;
@@ -252,6 +253,9 @@ public:
     void SendServerStateUpdate(CARD32 state, CARD32 value);
     void SendKeepAlive(bool bForce = false);
     void SendFTProtocolMsg();
+	// adzm 2010-09 - Notify streaming DSM plugin support
+	void NotifyPluginStreamingSupport();
+
 	// sf@2002 
 	// Update routines
 protected:
@@ -513,4 +517,54 @@ protected:
 	HANDLE		m_signal_event;
 };
 
+class vncClientThread : public omni_thread
+{
+public:
+
+	// Init
+	virtual BOOL Init(vncClient *client,
+		vncServer *server,
+		VSocket *socket,
+		BOOL auth,
+		BOOL shared);
+
+	// Sub-Init routines
+	virtual BOOL InitVersion();
+	virtual BOOL InitAuthenticate();
+	virtual BOOL AuthenticateClient(std::vector<CARD8>& current_auth);
+	virtual BOOL AuthenticateLegacyClient();
+
+	BOOL AuthSecureVNCPlugin(std::string& auth_message); // must SetHandshakeComplete after sending auth result!
+	BOOL AuthMsLogon(std::string& auth_message);
+	BOOL AuthVnc(std::string& auth_message);
+
+	BOOL FilterClients_Blacklist();
+	BOOL FilterClients_Ask_Permission();
+	BOOL CheckEmptyPasswd();
+	BOOL CheckLoopBack();
+	void LogAuthResult(bool success);
+	void SendConnFailed(const char* szMessage);
+
+	// adzm 2010-08
+	virtual bool InitSocket();
+	virtual bool TryReconnect();
+
+	// The main thread function
+	virtual void run(void *arg);
+	bool m_autoreconnectcounter_quit;
+
+protected:
+	virtual ~vncClientThread();
+
+	// Fields
+protected:
+	VSocket *m_socket;
+	vncServer *m_server;
+	vncClient *m_client;
+	BOOL m_auth;
+	BOOL m_shared;
+	BOOL m_ms_logon;
+	int m_major;
+	int m_minor;
+};
 #endif
