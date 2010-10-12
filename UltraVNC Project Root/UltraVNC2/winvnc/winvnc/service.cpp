@@ -462,8 +462,46 @@ Find_winlogon(DWORD SessionId)
   return Id;
 }
 
-DWORD Get_acctive_session_ID()
+bool
+Exist_Session(DWORD session)
 {
+	bool returnvale=false;
+	WTS_SESSION_INFO *pSessions = 0;
+	DWORD   nSessions(0);
+	DWORD ID_session=0;
+
+    typedef BOOL (WINAPI *pfnWTSEnumerateSessions)(HANDLE,DWORD,DWORD,PWTS_SESSION_INFO*,DWORD*);
+    typedef VOID (WINAPI *pfnWTSFreeMemory)(PVOID);
+
+    helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
+    helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
+
+    if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
+
+
+    if ((*pWTSEnumerateSessions)(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pSessions, &nSessions)) 
+    {
+        for (DWORD i(0); i < nSessions; ++i)
+        {
+            if (pSessions[i].State == WTSActive  && pSessions[i].SessionId==session) 
+				{
+					returnvale=true;
+					break;
+				}
+        }
+
+        (*pWTSFreeMemory)(pSessions);
+    }
+	return returnvale;
+}
+
+
+DWORD Get_acctive_session_ID()
+{	
+	if (G_MANUAL_SELECTED)
+	{
+		if (!Exist_Session(G_SESSIONID)) G_MANUAL_SELECTED=false;
+	}
 	if (G_MANUAL_SELECTED) return G_SESSIONID;
 	WTS_SESSION_INFO *pSessions = 0;
     DWORD   nSessions(0);

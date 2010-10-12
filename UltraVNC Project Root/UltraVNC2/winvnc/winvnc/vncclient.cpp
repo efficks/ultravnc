@@ -1270,22 +1270,25 @@ BOOL vncClientThread::AuthenticateClient(std::vector<CARD8>& current_auth)
 				if (!m_socket->SendExact((char *)&auth_result_msg, sizeof(auth_result_msg))) return FALSE;
 				CARD8 nr_lines=nr_sessions+1;
 				if (!m_socket->SendExact((char *)&nr_lines, sizeof(nr_lines))) return FALSE;
-				sessionmsg *sesmsg=new sessionmsg[nr_sessions+1];
+				sessionmsg sesmsg[25];
 				ComposeSessionmsg(sesmsg);
 				char line1[128];
 				for (int j=0;j<nr_lines;j++)
 					{
 						strcpy_s(line1,128,sesmsg[j].name);
 						strcat_s(line1,128," ");
+						if (strlen(sesmsg[j].username)==0)
+						strcat_s(line1,128,"no logged on");
+						else
 						strcat_s(line1,128,sesmsg[j].username);
 						strcat_s(line1,128," ");
 						strcat_s(line1,128,sesmsg[j].type);
-						if (!m_socket->SendExact((char *)&line1, 128)) {delete [] sesmsg;return false;}
+						if (!m_socket->SendExact((char *)line1, 128)) {return false;}
 					}
 				int nummer;
-				if (!m_socket->ReadExact((char *)&nummer, sizeof(int))) {delete [] sesmsg;return FALSE;}
+				if (!m_socket->ReadExact((char *)&nummer, sizeof(int))) {return FALSE;}
 				// tell service to switch session 
-				if (nummer-1 > nr_lines || nummer-1<0)  {delete [] sesmsg;return false;}
+				if (nummer-1 > nr_lines || nummer-1<0)  {return false;}
 				// sessionID= sesmsg[nummer].ID
 				if (nummer==0) G_MANUAL_SELECTED=false;
 				else
@@ -1295,7 +1298,6 @@ BOOL vncClientThread::AuthenticateClient(std::vector<CARD8>& current_auth)
 						//give unvc_session.exe to restart in other session
 						Sleep(2000);
 					}
-				delete [] sesmsg;
 			}
 			else G_MANUAL_SELECTED=false;
 
@@ -1358,7 +1360,7 @@ CARD8 vncClientThread::Aantal_Session()
 
 		typedef BOOL (WINAPI *pfnWTSEnumerateSessions)(HANDLE,DWORD,DWORD,PWTS_SESSION_INFO*,DWORD*);
 		typedef VOID (WINAPI *pfnWTSFreeMemory)(PVOID);
-		typedef BOOL (WINAPI * _WTSQUERYSESSIONINFORMATION)( HANDLE hServer, DWORD SessionId, WTS_INFO_CLASS WTSInfoClass, LPTSTR *ppBuffer, DWORD *pBytesReturned);
+		//typedef BOOL (WINAPI * _WTSQUERYSESSIONINFORMATION)( HANDLE hServer, DWORD SessionId, WTS_INFO_CLASS WTSInfoClass, LPTSTR *ppBuffer, DWORD *pBytesReturned);
 
 		helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
 		helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
@@ -1379,6 +1381,7 @@ CARD8 vncClientThread::Aantal_Session()
 		return  aantal_session;
 }
 
+bool vncWc2Mb(char* multibyte, WCHAR* widechar, int length);
 void vncClientThread::ComposeSessionmsg(sessionmsg *sesmsg)
 {
 	WTS_SESSION_INFO *pSessions = 0;
@@ -1406,20 +1409,21 @@ void vncClientThread::ComposeSessionmsg(sessionmsg *sesmsg)
 								strcpy_s(sesmsg[aantal_session].type,32,"Console");
 								strcpy_s(sesmsg[aantal_session].name,32,pSessions[i].pWinStationName);
 								HMODULE handle = LoadLibrary("WTSAPI32.DLL");
-								_WTSQUERYSESSIONINFORMATION pFunc;
+								_WTSQUERYSESSIONINFORMATION pFunc=NULL;
 								LPTSTR  ppBuffer  = NULL;    DWORD   pBytesReturned = 0;
 								if (handle)
 									{
-										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformation");
-										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,WTS_CURRENT_SESSION ,WTSUserName,&ppBuffer,&pBytesReturned ) )
+										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformationA");
+										if (pFunc)
+										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,pSessions[i].SessionId ,WTSUserName,&ppBuffer,&pBytesReturned ) )
 											{
 												memset( sesmsg[aantal_session].username, 0, 32);
 												strcpy_s( sesmsg[aantal_session].username, 32,ppBuffer );
+												(*pWTSFreeMemory)(ppBuffer);
 											}
 									}
 								aantal_session++;
 								FreeLibrary( handle ); 
-								(*pWTSFreeMemory)(ppBuffer);
 							}
 						else if ((pSessions[i].State == WTSActive        ||  pSessions[i].State == WTSShadow        || pSessions[i].State == WTSConnectQuery))
 							{
@@ -1428,21 +1432,22 @@ void vncClientThread::ComposeSessionmsg(sessionmsg *sesmsg)
 								strcpy_s(sesmsg[aantal_session].type,32,"RDP");	
 								strcpy_s(sesmsg[aantal_session].name,32,pSessions[i].pWinStationName);								
 								HMODULE handle = LoadLibrary("WTSAPI32.DLL");
-								_WTSQUERYSESSIONINFORMATION pFunc;
+								_WTSQUERYSESSIONINFORMATION pFunc=NULL;
 								LPTSTR  ppBuffer  = NULL;    DWORD   pBytesReturned = 0;
 								if (handle)
-									{
-										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformation");
-										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,WTS_CURRENT_SESSION ,WTSUserName,&ppBuffer,&pBytesReturned ) )
+									{										
+										pFunc = (_WTSQUERYSESSIONINFORMATION) GetProcAddress(handle, "WTSQuerySessionInformationA");
+										if (pFunc)
+										if ( pFunc( WTS_CURRENT_SERVER_HANDLE,pSessions[i].SessionId ,WTSUserName,&ppBuffer,&pBytesReturned ) )
 											{
 												memset( sesmsg[aantal_session].username, 0, 32);
 												strcpy_s( sesmsg[aantal_session].username, 32,ppBuffer );
+												(*pWTSFreeMemory)(ppBuffer);
 											}
 									}
 
 								 aantal_session++;
 								 FreeLibrary( handle ); 
-								 (*pWTSFreeMemory)(ppBuffer);
 							}																
 					}
 				(*pWTSFreeMemory)(pSessions);
