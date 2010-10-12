@@ -210,7 +210,7 @@
     </PreLinkEvent>
     <Link>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>wsock32.lib;winmm.lib;version.lib;comctl32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;version.lib;comctl32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateManifest>true</GenerateManifest>
       <SubSystem>Windows</SubSystem>
@@ -254,7 +254,7 @@
       <Command>cl /nologo /MT /Fo..\Release\ /Fd..\Release\ /c buildtime.cpp</Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>wsock32.lib;winmm.lib;version.lib;comctl32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;version.lib;comctl32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
