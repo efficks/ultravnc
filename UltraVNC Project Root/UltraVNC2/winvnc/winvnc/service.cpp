@@ -513,9 +513,7 @@ DWORD Get_acctive_session_ID()
     helper::DynamicFn<pfnWTSEnumerateSessions> pWTSEnumerateSessions("wtsapi32","WTSEnumerateSessionsA");
     helper::DynamicFn<pfnWTSFreeMemory> pWTSFreeMemory("wtsapi32", "WTSFreeMemory");
 
-    if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
-
-
+   /* if (pWTSEnumerateSessions.isValid() && pWTSFreeMemory.isValid())
     if ((*pWTSEnumerateSessions)(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pSessions, &nSessions)) 
     {
         for (DWORD i(0); i < nSessions; ++i)
@@ -528,7 +526,7 @@ DWORD Get_acctive_session_ID()
         }
 
         (*pWTSFreeMemory)(pSessions);
-    }
+    }*/
 
 	if (lpfnWTSGetActiveConsoleSessionId.isValid() && ID_session==0) ID_session=(*lpfnWTSGetActiveConsoleSessionId)();
 	return ID_session;
