@@ -26,12 +26,17 @@
 #include <comutil.h>
 extern HINSTANCE hInst;
 extern LONG UseDSMPlugin;
+
 char* GetDSMPluginName();
 void SetDSMPluginName(char* szDSMPlugin);
 CDSMPlugin* m_pDSMPlugin=NULL;
 CDSMPlugin* GetDSMPluginPointer() { return m_pDSMPlugin;};
 //vncSetAuth m_vncauth;
 extern char DSMPlugin[128];
+extern char DSMPluginConfig[512];
+
+
+
 
 BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 											   WPARAM wParam, LPARAM lParam)
@@ -89,14 +94,14 @@ BOOL CALLBACK DlgProcEncryption(HWND hwnd, UINT uMsg,
 						char szParams[32];
 						strcpy(szParams, "NoPassword,");
 						strcat(szParams, "server-app");
-						GetDSMPluginPointer()->SetPluginParams(hwnd, szParams);
+
+						char* szNewConfig = NULL;
+						if (GetDSMPluginPointer()->SetPluginParams(hwnd, szParams, DSMPluginConfig, &szNewConfig)) {
+							if (szNewConfig != NULL && strlen(szNewConfig) > 0) {
+								strcpy_s(DSMPluginConfig, 511, szNewConfig);
+							}
+						}
 					}
-					/*else
-					{
-						MessageBox(NULL, 
-							sz_ID_PLUGIN_NOT_LOAD, 
-							sz_ID_PLUGIN_LOADIN, MB_OK | MB_ICONEXCLAMATION );
-					}*/
 				}				
 				return TRUE;
 			}

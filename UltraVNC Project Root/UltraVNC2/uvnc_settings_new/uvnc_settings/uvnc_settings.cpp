@@ -84,6 +84,8 @@ LONG ConnectPriority;
 char DSMPlugin[128];
 char authhosts[150]= ("\0");
 
+char DSMPluginConfig[512]= ("\0");
+
 LONG AllowShutdown=1;
 LONG AllowProperties=1;
 LONG AllowEditClients=1;
@@ -179,6 +181,7 @@ myIniFile_Out.WriteInt("admin", "SC_AUTORECON", autorecon);
 myIniFile_Out.WriteInt("admin", "AuthRequired", AuthRequired);
 myIniFile_Out.WriteInt("admin", "ConnectPriority", ConnectPriority);
 myIniFile_Out.WriteString("admin", "DSMPlugin",DSMPlugin);
+myIniFile_Out.WriteString("admin", "DSMPluginConfig",DSMPluginConfig);
 myIniFile_Out.WriteString("admin", "AuthHosts",authhosts);
 myIniFile_Out.WriteInt("admin", "AllowShutdown" ,AllowShutdown);
 myIniFile_Out.WriteInt("admin", "AllowProperties" ,AllowProperties);
@@ -271,6 +274,7 @@ autorecon=myIniFile_In.ReadInt("admin", "SC_AUTORECON", false);
 AuthRequired=myIniFile_In.ReadInt("admin", "AuthRequired", true);
 ConnectPriority=myIniFile_In.ReadInt("admin", "ConnectPriority", 0);
 myIniFile_In.ReadString("admin", "DSMPlugin",DSMPlugin,128);
+myIniFile_In.ReadString("admin", "DSMPluginConfig",DSMPluginConfig,512);
 myIniFile_In.ReadString("admin", "AuthHosts",authhosts,150);
 AllowShutdown=myIniFile_In.ReadInt("admin", "AllowShutdown", true);
 AllowProperties=myIniFile_In.ReadInt("admin", "AllowProperties", true);

@@ -85,15 +85,23 @@ CDSMPlugin::CDSMPlugin()
 
 	m_hPDll = NULL;
 
+	//adzm - 2009-07-05
 	// Plugin's functions pointers init
-	STARTUP			m_PStartup = NULL;
-	SHUTDOWN		m_PShutdown = NULL;
-	SETPARAMS		m_PSetParams = NULL;
-	GETPARAMS		m_PGetParams = NULL;
-	TRANSFORMBUFFER m_PTransformBuffer = NULL;
-	RESTOREBUFFER	m_PRestoreBuffer = NULL;
-	TRANSFORMBUFFER	m_PFreeBuffer = NULL;
-	RESET			m_PReset = NULL;
+	m_PDescription = NULL;
+	m_PStartup = NULL;
+	m_PShutdown = NULL;
+	m_PSetParams = NULL;
+	m_PGetParams = NULL;
+	m_PTransformBuffer = NULL;
+	m_PRestoreBuffer = NULL;
+	m_PFreeBuffer = NULL;
+	m_PReset = NULL;
+	//adzm - 2009-06-21
+	m_PCreatePluginInterface = NULL;
+	//adzm 2010-05-10
+	m_PCreateIntegratedPluginInterface = NULL;
+	//adzm 2010-05-12 - dsmplugin config
+	m_PConfig = NULL;
 
 }
 
@@ -138,10 +146,11 @@ char* CDSMPlugin::DescribePlugin(void)
 		 szDescription = (*m_PDescription)();
 		 if (szDescription != NULL)
 		 {
+			 //adzm 2010-05-10 - this was inconsistent with the way the plugins are written
 			MyStrToken(m_szPluginName, szDescription, 1, ',');
-			MyStrToken(m_szPluginAuthor, szDescription, 2, ',');
+			MyStrToken(m_szPluginVersion, szDescription, 2, ',');
 			MyStrToken(m_szPluginDate, szDescription, 3, ',');
-			MyStrToken(m_szPluginVersion, szDescription, 4, ',');
+			MyStrToken(m_szPluginAuthor, szDescription, 4, ',');
 			MyStrToken(m_szPluginFileName, szDescription, 5, ',');
 		 }
 		 return szDescription;
@@ -178,12 +187,19 @@ bool CDSMPlugin::ResetPlugin(void)
 //
 // szParams is the key (or password) that is transmitted to the loaded DSMplugin
 //
-bool CDSMPlugin::SetPluginParams(HWND hWnd, char* szParams)
+bool CDSMPlugin::SetPluginParams(HWND hWnd, char* szParams, char* szConfig, char** pszNewConfig)
 {
 	// TODO: Log events
-	int nRes = (*m_PSetParams)(hWnd, szParams);
-	if (nRes > 0) return true; else return false;
 
+	//adzm 2010-05-12 - dsmplugin config
+	if (m_PConfig) {
+		char* szNewConfig = NULL;
+		int nRes = (*m_PConfig)(hWnd, szParams, szConfig, pszNewConfig);		
+		if (nRes > 0) return true; else return false;
+	} else {
+		int nRes = (*m_PSetParams)(hWnd, szParams);
+		if (nRes > 0) return true; else return false;
+	}
 }
 
 
@@ -267,31 +283,44 @@ bool CDSMPlugin::LoadPlugin(char* szPlugin, bool fAllowMulti)
 			strcpy_s(szDllCopyName, 260,szPlugin);
 			szDllCopyName[strlen(szPlugin) - 4] = '\0'; //remove the ".dsm" extension
 			sprintf(szDllCopyName, "%s-tmp.d%d", szDllCopyName, i++);
-			fDllCopyCreated = (FALSE != CopyFile(szPlugin, szDllCopyName, false));
+			//fDllCopyCreated = (FALSE != CopyFile(szPlugin, szDllCopyName, false));
 			// Note: Let's be really dirty; Overwrite if it's possible only (dll not loaded). 
 			// This way if for some reason (abnormal process termination) the dll wasn't previously 
 			// normally deleted we overwrite/clean it with the new one at the same time.
-			strcpy (szCurrentDir_szDllCopyName,szDllCopyName);
-			DWORD error=GetLastError();
-			if (error==2)
+			//strcpy (szCurrentDir_szDllCopyName,szDllCopyName);
+			//DWORD error=GetLastError();
+			//if (error==2)
 			{
 				if (GetModuleFileName(NULL, szCurrentDir, MAX_PATH))
+					{
+						char* p = strrchr(szCurrentDir, '\\');
+						*p = '\0';
+					}
+				char lpPathBuffer[MAX_PATH];
+				DWORD dwBufSize=MAX_PATH;
+				DWORD dwRetVal;
+				dwRetVal = GetTempPath(dwBufSize,lpPathBuffer);
+				if (dwRetVal > dwBufSize || (dwRetVal == 0))
 				{
-					char* p = strrchr(szCurrentDir, '\\');
-					*p = '\0';
+					strcpy (lpPathBuffer,szCurrentDir);
 				}
+				else
+				{
+					
+				}
+				
 				strcpy (szCurrentDir_szPlugin,szCurrentDir);
 				strcat (szCurrentDir_szPlugin,"\\");
 				strcat (szCurrentDir_szPlugin,szPlugin);
 
-				strcpy (szCurrentDir_szDllCopyName,szCurrentDir);
-				strcat (szCurrentDir_szDllCopyName,"\\");
+				strcpy (szCurrentDir_szDllCopyName,lpPathBuffer);
+				//strcat (szCurrentDir_szDllCopyName,"\\");
 				strcat (szCurrentDir_szDllCopyName,szDllCopyName);
 				fDllCopyCreated = (FALSE != CopyFile(szCurrentDir_szPlugin, szCurrentDir_szDllCopyName, false));
 			}
 			if (i > 99) break; // Just in case...
 		}
-		strcpy(m_szDllName, szDllCopyName);
+		strcpy(m_szDllName, szCurrentDir_szDllCopyName);
 		m_hPDll = LoadLibrary(m_szDllName);
 	}
 	else // Use the original plugin dll
@@ -326,6 +355,12 @@ bool CDSMPlugin::LoadPlugin(char* szPlugin, bool fAllowMulti)
 	m_PRestoreBuffer   = (RESTOREBUFFER)   GetProcAddress(m_hPDll, "RestoreBuffer");
 	m_PFreeBuffer      = (FREEBUFFER)      GetProcAddress(m_hPDll, "FreeBuffer");
 	m_PReset           = (RESET)           GetProcAddress(m_hPDll, "Reset");
+	//adzm - 2009-06-21
+	m_PCreatePluginInterface	= (CREATEPLUGININTERFACE)	GetProcAddress(m_hPDll, "CreatePluginInterface");
+	//adzm 2010-05-10
+	m_PCreateIntegratedPluginInterface	= (CREATEINTEGRATEDPLUGININTERFACE)	GetProcAddress(m_hPDll, "CreateIntegratedPluginInterface");
+	//adzm 2010-05-12 - dsmplugin config
+	m_PConfig         = (CONFIG)           GetProcAddress(m_hPDll, "Config");
 
 	if (m_PStartup == NULL || m_PShutdown == NULL || m_PSetParams == NULL || m_PGetParams == NULL
 		|| m_PTransformBuffer == NULL || m_PRestoreBuffer == NULL || m_PFreeBuffer == NULL)
@@ -369,6 +404,37 @@ bool CDSMPlugin::UnloadPlugin(void)
 }
 
 
+//adzm - 2009-06-21
+IPlugin* CDSMPlugin::CreatePluginInterface()
+{
+	if (m_PCreatePluginInterface) {
+		return m_PCreatePluginInterface();
+	} else {
+		return NULL;
+	}
+}
+
+bool CDSMPlugin::SupportsMultithreaded()
+{
+	//adzm 2010-05-10
+	return m_PCreatePluginInterface != NULL || m_PCreateIntegratedPluginInterface != NULL;
+}
+
+//adzm 2010-05-10
+IIntegratedPlugin* CDSMPlugin::CreateIntegratedPluginInterface()
+{
+	if (m_PCreateIntegratedPluginInterface) {
+		return m_PCreateIntegratedPluginInterface();
+	} else {
+		return NULL;
+	}
+}
+
+bool CDSMPlugin::SupportsIntegrated()
+{
+	return m_PCreateIntegratedPluginInterface != NULL;
+}
+
 //
 // Tell the plugin to do its transformation on the source data buffer
 // Return: pointer on the new transformed buffer (allocated by the plugin)
@@ -406,6 +472,7 @@ void CDSMPlugin::RestoreBufferUnlock()
 BOOL m_fDSMPluginEnabled;
 char m_szDSMPlugin[128];
 extern CDSMPlugin *m_pDSMPlugin;
+char m_szDSMPluginConfig[512];
 
 // sf@2002 - v1.1.x - DSM Plugin
 //
@@ -431,6 +498,10 @@ void SetDSMPluginName(char* szDSMPlugin)
 	return;
 }
 
+char* GetDSMPluginConfig()
+{ 
+	return m_szDSMPluginConfig;
+};
 //
 // Load if necessary and initialize the current DSMPlugin
 // This can only be done if NO client is connected (for the moment)
@@ -463,30 +534,31 @@ BOOL SetDSMPlugin(BOOL bForceReload)
 		}
 	}
 
-
 	// Now that it is loaded, init it
 	if (m_pDSMPlugin->InitPlugin())
 	{
 		char szParams[MAXPWLEN + 64];
+		char password[MAXPWLEN];
 		// Does the plugin need the VNC password to do its job ?
 		if (!_stricmp(m_pDSMPlugin->GetPluginParams(), "VNCPasswordNeeded"))
-			strcpy(szParams, vncDecryptPasswd((char *)passwd));
+			strcpy(szParams, vncDecryptPasswd((char *)password));
 		else
 			strcpy(szParams, "NoPassword");
 
-		// The second parameter tells the plugin the kind of program is using it
-		// (in WinVNC : "server-app" or "server-svc"
 		strcat(szParams, ",");
 		strcat(szParams, "server-app");
 
-		if (m_pDSMPlugin->SetPluginParams(NULL, szParams/*vncDecryptPasswd((char *)password)*/))
+		//adzm 2010-05-12 - dsmplugin config
+		if (m_pDSMPlugin->SetPluginParams(NULL, szParams/*vncDecryptPasswd((char *)password)*/, GetDSMPluginConfig(), NULL))
 		{
 			m_pDSMPlugin->SetEnabled(true); // The plugin is ready to be used
+			
 			return TRUE;
 		}
 		else
 		{
 			m_pDSMPlugin->SetEnabled(false);
+			
 		}
 	}
 	else
@@ -495,4 +567,10 @@ BOOL SetDSMPlugin(BOOL bForceReload)
 	}
 
 	return TRUE;
+}
+
+//adzm 2010-05-12 - dsmplugin config
+void SetDSMPluginConfig(char* szDSMPluginConfig)
+{
+	strncpy_s(m_szDSMPluginConfig, sizeof(m_szDSMPluginConfig) - 1, szDSMPluginConfig, _TRUNCATE);
 }
